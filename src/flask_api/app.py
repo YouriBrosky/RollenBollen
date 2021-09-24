@@ -1,14 +1,3 @@
-# from flask import Flask
-
-# app = Flask(__name__)
-
-# @app.route("/")
-# def hello_world():
-#     return "<p>Hello, World!</p>"
-
-# if __name__ == "__main__":
-#     app.run()
-
 """The flask api to run the BOLT Swarm."""
 from typing import Dict, List, Union
 import numpy as np
@@ -18,8 +7,7 @@ from src.flask_api.bolt import Bolt, Swarm
 from src.flask_api.maze_maker import Location, Maze, manhattan_distance
 from src.flask_api.maze_search import astar, breadth_first_search, depth_first_search
 
-
-app: Flask = Flask(__name__, template_folder="templates")
+app: Flask = Flask(__name__)
 swarm: Swarm = Swarm()
 paths: Dict[int, Dict[str, Union[int, List[Location]]]] = {}
 
@@ -46,8 +34,6 @@ def page_home():
     final_bfs, path_bfs = breadth_first_search(m.start, m.finish_line, m.frontier)
     distance = manhattan_distance(m.finish)
     final_astar, path_astar = astar(m.start, m.finish_line, m.frontier, distance)
-    
-    
     return render_template(
         "home.html",
         maze_map=m.maze,
