@@ -3,7 +3,7 @@
 from math import sqrt
 from typing import NamedTuple
 
-from src.flask_api.maze_search import astar, depth_first_search
+from maze_search import astar, depth_first_search
 
 factory_hall = [
     [0, 0, 0, 0, 1],

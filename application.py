@@ -14,9 +14,9 @@ from typing import Dict, List, Union
 import numpy as np
 from flask import Flask, jsonify, render_template, request
 
-from src.flask_api.bolt import Bolt, Swarm
-from src.flask_api.maze_maker import Location, Maze, manhattan_distance
-from src.flask_api.maze_search import astar, breadth_first_search, depth_first_search
+from bolt import Bolt, Swarm
+from maze_maker import Location, Maze, manhattan_distance
+from maze_search import astar, breadth_first_search, depth_first_search
 
 
 app: Flask = Flask(__name__, template_folder="templates")
