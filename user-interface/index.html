@@ -1,20 +1,34 @@
 <html>
-
     <head>
-
-        <title>Let’s React with npm</title>
-
-        <!– Load React Libraries, afblijven met je tengels –>
+        <title>React’s React</title>
+        <!– Load React. afblijven met de tengels –>
         <!– Note: when deploying, replace “development.js” with “production.min.js”. –>
-        <script src=“https://unpkg.com/react@17/umd/react.development.js” crossorigin></script>
-        <script src=“https://unpkg.com/react-dom@17/umd/react-dom.development.js” crossorigin></script>                    
-      
+        <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+        <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+
     </head>
+        <body>
 
- 
+        <div id="root"></div>
 
-    <body>            
-      <p>hallo</p>
+        <!– This is embedded JavaScript. You can even place this in separate .js file –>
+
+        <script>           
+          window.onload = function()
+          {      
+            class HelloClass extends React.Component 
+            {
+              render() {
+                  return React.createElement('div', null, 'React without npm..');
+              }
+            }
+
+            ReactDOM.render(
+              React.createElement(HelloClass, null, null),
+              document.getElementById('root')
+            );
+          };        
+        </script>
     </body>
 
 </html>
