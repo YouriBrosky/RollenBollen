@@ -159,7 +159,10 @@ def get_bolt(x, y):
     min_dist = 100
     bolt_id = -1
     for bolt in swarm.bolts:
-        if calc_dist(bolt.position, x, y) < min_dist:
+        if (
+            calc_dist(bolt.position, x, y) < min_dist
+            and calc_dist(bolt.position, x, y) > 0
+        ):
             bolt_id = bolt.id
             min_dist = calc_dist(bolt.position, x, y)
     return bolt_id
@@ -185,6 +188,12 @@ def api_bolt_command(code: int):
     pos = swarm.bolts[code - 1].next_move
     swarm.bolts[code - 1].set_position(x=pos["x"], y=pos["y"])
     return jsonify(pos)
+
+
+@app.route("/api/home")
+def api_go_home():
+    for bolt in swarm.bolts:
+        get_path(bolt.id, 0, 0)
 
 
 # endregion
