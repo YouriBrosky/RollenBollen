@@ -20,11 +20,11 @@ def page_home():
     m = Maze()
     if request.method == "POST" and request.form["rand"] == "loc":
         # Section: New random finish
-        rand_x = np.random.choice(np.arange(5))
+        rand_x = np.random.choice(np.arange(10))
         rand_y = (
-            np.random.choice(np.arange(5))
+            np.random.choice(np.arange(10))
             if rand_x != 0
-            else np.random.choice(np.arange(1, 5))
+            else np.random.choice(np.arange(1, 10))
         )
         m = Maze(finish=Location(x=rand_x, y=rand_y))
     final_dfs, path_dfs = depth_first_search(m.start, m.finish_line, m.frontier)
