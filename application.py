@@ -1,23 +1,12 @@
-# from flask import Flask
-
-# app = Flask(__name__)
-
-# @app.route("/")
-# def hello_world():
-#     return "<p>Hello, World!</p>"
-
-# if __name__ == "__main__":
-#     app.run()
-
 """The flask api to run the BOLT Swarm."""
 from typing import Dict, List, Union
+
 import numpy as np
 from flask import Flask, jsonify, render_template, request
 
 from bolt import Bolt, Swarm
 from maze_maker import Location, Maze, manhattan_distance
 from maze_search import astar, breadth_first_search, depth_first_search
-
 
 app: Flask = Flask(__name__, template_folder="templates")
 swarm: Swarm = Swarm()
@@ -46,8 +35,7 @@ def page_home():
     final_bfs, path_bfs = breadth_first_search(m.start, m.finish_line, m.frontier)
     distance = manhattan_distance(m.finish)
     final_astar, path_astar = astar(m.start, m.finish_line, m.frontier, distance)
-    
-    
+
     return render_template(
         "home.html",
         maze_map=m.maze,
@@ -86,6 +74,7 @@ def api_register():
     return jsonify(swarm.register_bolt(bolt=bolt))
 
 
+# region: Bolt
 @app.route("/api/bolt", methods=["GET"])
 def api_list_bolts():
     """Return a list of all BOLT's."""
@@ -164,12 +153,26 @@ def get_path(code: int, x: int, y: int):
     swarm.bolts[code - 1].next_move = {"x": final_astar[-1].x, "y": final_astar[-1].y}
 
 
+def get_bolt(x, y):
+    min_dist = 100
+    bolt_id = -1
+    for bolt in swarm.bolts:
+        if calc_dist(bolt.position, x, y) < min_dist:
+            bolt_id = bolt.id
+            min_dist = calc_dist(bolt.position, x, y)
+    return bolt_id
+
+
+def calc_dist(xy_dict, x2, y2):
+    x1 = xy_dict["x"]
+    y1 = xy_dict["y"]
+    return ((y2 - y1) ** 2 + (x2 - x1) ** 2) ** (1 / 2)
+
+
 @app.route("/api/bolt/<int:code>/command", methods=["GET"])
 def api_bolt_command(code: int):
     """Send a command to the bolt."""
     global paths
-    print(f"[DEBUG] - code:{code}")
-    print(f"[DEBUG] - bolts:{len(swarm.bolts)}")
     if code in paths and len(paths[code]["path"]) > 0:
         loc: Location = paths[code]["path"][paths[code]["counter"]]
         paths[code]["counter"] += 1
@@ -184,6 +187,23 @@ def api_bolt_command(code: int):
 
 # endregion
 
+# region: Nest
+@app.route("/api/nest/<code>")
+def api_nest_command(code: str):
+    numbers = code.split("")
+    x = int(numbers[0])
+    y = int(numbers[1])
+
+    bolt_code = get_bolt(x, y)
+    get_path(bolt_code, x, y)
+
+    return f"<h1>NEST</h1><br><p>bolt:{bolt_code} GOTO x:{x}, y:{y}</p>"
+
+
+# endregion
+
+# endregion
+
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", debug=False, port=80)
+    app.run(port=80)
