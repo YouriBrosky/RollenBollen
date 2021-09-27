@@ -192,6 +192,8 @@ def api_bolt_command(code: int):
 # region: Nest
 @app.route("/api/nest/<code>")
 def api_nest_command(code: str):
+    if len(code) == 1:
+        code += "0"
     x = int(code[0])
     y = int(code[1])
 
