@@ -50,6 +50,7 @@ def page_home():
 
 @app.route("/reset", methods=["GET"])
 def reset_webserver():
+    """Reset the server."""
     global swarm
     swarm = Swarm()
     global paths
@@ -155,6 +156,7 @@ def get_path(code: int, x: int, y: int):
 
 
 def get_bolt(x, y):
+    """Get the id of the nearest Bolt to position x, y."""
     global swarm
     min_dist = 100
     bolt_id = -1
@@ -168,10 +170,14 @@ def get_bolt(x, y):
     return bolt_id
 
 
-def calc_dist(xy_dict, x2, y2):
-    x1 = xy_dict["x"]
-    y1 = xy_dict["y"]
-    return ((y2 - y1) ** 2 + (x2 - x1) ** 2) ** (1 / 2)
+def calc_dist(xy_dict, x, y):
+    """Calc the length of a path from the Bolt to <x> and <y>."""
+    start = Location(x=int(xy_dict["x"]), y=int(xy_dict["y"]))
+    m = Maze(start=start, finish=Location(x=x, y=y))
+    distance = manhattan_distance(m.finish)
+    final_astar, _ = astar(m.start, m.finish_line, m.frontier, distance)
+
+    return len(final_astar)
 
 
 @app.route("/api/bolt/<int:code>/command", methods=["GET"])
@@ -192,6 +198,7 @@ def api_bolt_command(code: int):
 
 @app.route("/api/home")
 def api_go_home():
+    """Send all bolts to 0, 0 AKA Homebase."""
     for bolt in swarm.bolts:
         get_path(bolt.id, 0, 0)
 
@@ -201,6 +208,7 @@ def api_go_home():
 # region: Nest
 @app.route("/api/nest/<code>")
 def api_nest_command(code: str):
+    """The api-point for the Google Nest."""
     if len(code) == 1:
         code = "0" + code
     x = int(code[0])
