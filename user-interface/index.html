@@ -8,28 +8,34 @@
 
         <link rel="stylesheet" href="stylesheet.css"/>
     </head>
-        <body>
+    <body>
 
-        <div id="root"></div>
+      <div id="root">
+        
+      </div>
 
-        <!– This is embedded JavaScript. You can even place this in separate .js file –>
+      <!– This is embedded JavaScript. You can even place this in separate .js file –>
 
-        <script>           
-          window.onload = function()
-          {      
-            class HelloClass extends React.Component 
-            {
-              render() {
-                  return React.createElement('h1', null, 'React without npm..');
-              }
+      <script>           
+        window.onload = function()
+        {      
+          class HelloClass extends React.Component 
+          {
+            render() {
+                return React.createElement('h1', null, 'React without npm..');
             }
+          }
 
-            ReactDOM.render(
-              React.createElement(HelloClass, null, null),
-              document.getElementById('root')
-            );
-          };        
-        </script>
+          ReactDOM.render(
+            React.createElement(HelloClass, null, null),
+            document.getElementById('root')
+          );
+        };        
+      </script>
+      <div class="box">
+      
+      </div>
+
     </body>
 
 </html>
