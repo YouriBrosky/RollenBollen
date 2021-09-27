@@ -164,6 +164,7 @@ def get_bolt(x, y):
         if (
             calc_dist(bolt.position, x, y) < min_dist
             and calc_dist(bolt.position, x, y) > 0
+            and not bolt.is_busy()
         ):
             bolt_id = bolt.id
             min_dist = calc_dist(bolt.position, x, y)
@@ -208,7 +209,7 @@ def api_go_home():
 # region: Nest
 @app.route("/api/nest/<code>")
 def api_nest_command(code: str):
-    """The api-point for the Google Nest."""
+    """Api-point for the Google Nest."""
     if len(code) == 1:
         code = "0" + code
     x = int(code[0])
