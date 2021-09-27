@@ -151,8 +151,28 @@ def get_path(code: int, x: int, y: int):
     distance = manhattan_distance(m.finish)
     final_astar, _ = astar(m.start, m.finish_line, m.frontier, distance)
     final_astar.append(m.finish)
-    paths[code] = {"path": final_astar, "counter": 0}
+    final_path = optimize_path(final_astar)
+    paths[code] = {"path": final_path, "counter": 0}
     swarm.bolts[code - 1].next_move = {"x": final_astar[-1].x, "y": final_astar[-1].y}
+
+
+def optimize_path(path: List[Location]):
+    """Optimize the path so it will be run in less actions"""
+    counter = 0
+    optimized_path: List[Location] = []
+    optimized_path.append(path[0])
+    x = path[counter].x
+    y = path[counter].y
+    counter += 1
+    while optimized_path[-1] != path[-1]:
+        while counter < len(path) and (path[counter].x == x or path[counter].y == y):
+            counter += 1
+        optimized_path.append(path[counter - 1])
+        if optimized_path[-1] != path[-1]:
+            x = path[counter].x
+            y = path[counter].y
+    optimized_path = optimized_path[1:]
+    return optimized_path
 
 
 def get_bolt(x, y):
