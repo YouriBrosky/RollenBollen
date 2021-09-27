@@ -143,6 +143,7 @@ def api_bolt_goto(code: int):
 
 def get_path(code: int, x: int, y: int):
     """Get a path via A* for the given BOLT and coordinates."""
+    global swarm
     pos = swarm.bolts[code - 1].position
     start = Location(x=int(pos["x"]), y=int(pos["y"]))
     m = Maze(start=start, finish=Location(x=x, y=y))
@@ -154,6 +155,7 @@ def get_path(code: int, x: int, y: int):
 
 
 def get_bolt(x, y):
+    global swarm
     min_dist = 100
     bolt_id = -1
     for bolt in swarm.bolts:
@@ -190,9 +192,8 @@ def api_bolt_command(code: int):
 # region: Nest
 @app.route("/api/nest/<code>")
 def api_nest_command(code: str):
-    numbers = code.split("")
-    x = int(numbers[0])
-    y = int(numbers[1])
+    x = int(code[0])
+    y = int(code[1])
 
     bolt_code = get_bolt(x, y)
     get_path(bolt_code, x, y)
