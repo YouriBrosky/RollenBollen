@@ -6,11 +6,17 @@ from typing import NamedTuple
 from maze_search import astar, depth_first_search
 
 factory_hall = [
-    [0, 0, 0, 0, 1],
-    [0, 1, 0, 1, 0],
-    [0, 1, 0, 1, 0],
-    [0, 1, 0, 0, 0],
-    [0, 1, 0, 1, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+    [1, 1, 1, 1, 0, 1, 1, 0, 1, 1],
+    [0, 0, 0, 0, 0, 0, 1, 0, 1, 0],
+    [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    [1, 1, 0, 1, 0, 0, 1, 0, 1, 0],
+    [0, 1, 0, 1, 0, 1, 1, 1, 1, 1],
+    [0, 0, 0, 1, 0, 1, 1, 1, 1, 1],
+    [0, 1, 0, 1, 0, 1, 1, 1, 1, 1],
+    [0, 1, 0, 1, 0, 1, 1, 1, 1, 1],
+    [0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+
 ]
 
 
@@ -35,11 +41,11 @@ class Maze:
     def __init__(
         self,
         factory=factory_hall,
-        rows=5,
-        columns=5,
+        rows=10,
+        columns=10,
         barriers=0.4,
         start=Location(0, 0),
-        finish=Location(4, 4),
+        finish=Location(9, 0),
     ):
         self.factory = factory
         self.rows = rows
