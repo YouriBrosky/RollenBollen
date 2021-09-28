@@ -1,14 +1,13 @@
 <html>
 
 <head>
-  <title>React’s React</title>
-  <!– Load React. afblijven met de tengels –>
-    <!– Note: when deploying, replace “development.js” with “production.min.js”. –>
+  <title>RollenBollen</title>
+  <!-- <!– Load React. afblijven met de tengels –>
+    <!– Note: when deploying, replace “development.js” with “production.min.js”. –> -->
       <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
       <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
       <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
       <!-- <script type="text/babel" src="script.js"></script> -->
-
       <link rel="stylesheet" href="stylesheet.css" />
 </head>
 
@@ -17,57 +16,54 @@
   <div id="root">
 
   </div>
-
+  <div class="container">
+        <div class="button-div"> 
+          <div class="button" style="background-color:#C8EFF9" onclick="alert('you clicked')"><h2>tekst</h2></div>
+          <div class="button" style="background-color:#48FFFF" onclick="alert('you clicked')"><h2>tekst</h2></div>
+          <div class="button" style="background-color:#F27D42" onclick="alert('you clicked')"><h2>tekst</h2></div>
+          <div class="button" style="background-color:#022449" onclick="alert('you clicked')"><h2>tekst</h2></div>
+          <div class="button" style="background-color:#62C7A5" onclick="alert('you clicked')"><h2>tekst</h2></div>
+        </div>
+    <div class="box-map" id="box-map"></div>
+  </div>
+  
   <!-- Chess-board -->
-
-  <!– This is embedded JavaScript. You can even place this in separate .js file –>
-
-    <script type="text/babel">
-      window.onload = function () {
-        class HelloClass extends React.Component {
-          render() {
-            return React.createElement('h1', null, 'React without npm..');
-          }
+  <script type="text/babel">
+    window.onload = function () {
+      class HelloClass extends React.Component {
+        render() {
+          return React.createElement('h1', null, 'React without npm..');
         }
-        class GridView extends React.Component {
-          render() {
-            let grid = []
-            for (let index = 0; index < 100; index++) {
-              grid.push(index);
-            }
-            return (
-              <div className="grid-container">
-                {grid.map((grid, index) => <div className="grid-item" key={index}>{grid}</div>)}
-              </div>
-            )
+      }
+      class GridView extends React.Component {
+        render() {
+          let grid = []
+          for (let index = 0; index < 100; index++) {
+            grid.push(index);
           }
+          return (
+            <div className="grid-container">
+              {grid.map((grid, index) => <div className="grid-item" key={index}>{grid}</div>)}
+            </div>
+          )
         }
-        // ReactDOM.render(
-        //   React.createElement(HelloClass, null, null),
-        //   document.getElementById('root')
-        // );
-        ReactDOM.render(
-          React.createElement(GridView, null, null),
-          document.getElementById('box')
-        );
-      };
+      }
+      // ReactDOM.render(
+      //   React.createElement(HelloClass, null, null),
+      //   document.getElementById('root')
+      // );
+      ReactDOM.render(
+        React.createElement(GridView, null, null),
+        document.getElementById('box-map')
+      );
+    };
 
-    </script>
-    <div class="box" id="box">
-      <!-- <div class="grid-container">
-        <div class="grid-item">1</div>
-        <div class="grid-item">2</div>
-        <div class="grid-item">3</div>
-        <div class="grid-item">4</div>
-        <div class="grid-item">5</div>
-        <div class="grid-item">6</div>
-        <div class="grid-item">7</div>
-        <div class="grid-item">8</div>
-        <div class="grid-item">9</div>
-        <div class="grid-item">10</div>
-      </div> -->
-    </div>
+  </script>
+    
 
-</body>
+    
+      
+     
+    </body>
 
 </html>

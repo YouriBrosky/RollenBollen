@@ -17,13 +17,25 @@ h1 {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.box {
-  align-items: center;
+h2 {
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+}
+
+.container {
+  display: flex;
   justify-content: center;
+}
+
+.box-map {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
   background-color: #558dca;
   height: 650;
   width: 650;
-  margin: auto;
+  border-radius: 15px;
   padding: 10px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
@@ -33,14 +45,36 @@ h1 {
   height: 625;
   width: 625;
   display: grid;
-  background-color: #CFCFCF;
+  background-color: #cfcfcf;
   padding: 10px;
   grid-gap: 10px;
 }
 
-.grid-item{
+.grid-item {
   background-color: #c8eff9;
   border: 1px solid rgba(0, 0, 0, 0.8);
   font-size: 30px;
   text-align: center;
+}
+.button-div {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  background-color: #558dca;
+  height: 270;
+  width: 250;
+  border-radius: 15px;
+  margin-right: 20px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40;
+  width: 225;
+  border-radius: 10px;
+  user-select: none;
 }
