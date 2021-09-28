@@ -13,11 +13,25 @@ swarm: Swarm = Swarm()
 paths: Dict[int, Dict[str, Union[int, List[Location]]]] = {}
 
 
+FACTORY_HALL = [
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+    [1, 1, 1, 1, 0, 1, 1, 0, 1, 1],
+    [0, 0, 0, 0, 0, 0, 1, 0, 1, 0],
+    [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    [1, 1, 0, 1, 0, 0, 1, 0, 1, 0],
+    [0, 1, 0, 1, 1, 1, 1, 1, 1, 1],
+    [0, 0, 0, 1, 1, 1, 1, 1, 1, 1],
+    [0, 1, 0, 1, 1, 1, 1, 1, 1, 1],
+    [0, 1, 0, 1, 1, 1, 1, 1, 1, 1],
+    [0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+]
+
+
 # region: Pages
 @app.route("/", methods=["GET", "POST"])
 def page_home():
     """Return the home page of the website."""
-    m = Maze()
+    m = Maze(factory=FACTORY_HALL)
     if request.method == "POST" and request.form["rand"] == "loc":
         # Section: New random finish
         rand_x = np.random.choice(np.arange(10))
@@ -26,11 +40,11 @@ def page_home():
             if rand_x != 0
             else np.random.choice(np.arange(1, 10))
         )
-        m = Maze(finish=Location(x=rand_x, y=rand_y))
+        m = Maze(factory=FACTORY_HALL, finish=Location(x=rand_x, y=rand_y))
     final_dfs, path_dfs = depth_first_search(m.start, m.finish_line, m.frontier)
     if path_dfs is None:
         while path_dfs is None:
-            m = Maze()
+            m = Maze(factory=FACTORY_HALL)
             final_dfs, path_dfs = depth_first_search(m.start, m.finish_line, m.frontier)
     final_bfs, path_bfs = breadth_first_search(m.start, m.finish_line, m.frontier)
     distance = manhattan_distance(m.finish)
@@ -147,7 +161,7 @@ def get_path(code: int, x: int, y: int):
     global swarm
     pos = swarm.bolts[code - 1].position
     start = Location(x=int(pos["x"]), y=int(pos["y"]))
-    m = Maze(start=start, finish=Location(x=x, y=y))
+    m = Maze(factory=FACTORY_HALL, start=start, finish=Location(x=x, y=y))
     distance = manhattan_distance(m.finish)
     final_astar, _ = astar(m.start, m.finish_line, m.frontier, distance)
     final_astar.append(m.finish)
@@ -194,7 +208,7 @@ def get_bolt(x, y):
 def calc_dist(xy_dict, x, y):
     """Calc the length of a path from the Bolt to <x> and <y>."""
     start = Location(x=int(xy_dict["x"]), y=int(xy_dict["y"]))
-    m = Maze(start=start, finish=Location(x=x, y=y))
+    m = Maze(factory=FACTORY_HALL, start=start, finish=Location(x=x, y=y))
     distance = manhattan_distance(m.finish)
     final_astar, _ = astar(m.start, m.finish_line, m.frontier, distance)
 
@@ -242,6 +256,20 @@ def api_nest_command(code: str):
 
 
 # endregion
+
+# region: Maze
+@app.route("/api/maze")
+def api_get_maze():
+    x = request.args.get("x")
+    y = request.args.get("y")
+    value = request.args.get("value")
+    if x and x.isdigit() and y and y.isdigit():
+        FACTORY_HALL[y][x] = value
+    return jsonify(FACTORY_HALL)
+
+
+# endregion
+
 
 # endregion
 
