@@ -262,9 +262,9 @@ def api_nest_command(code: str):
 def api_get_maze():
     x = request.args.get("x")
     y = request.args.get("y")
-    value = request.args.get("value")
-    if x and x.isdigit() and y and y.isdigit():
-        FACTORY_HALL[y][x] = value
+    value = request.args.get("v")
+    if x and x.isdigit() and y and y.isdigit() and value and value.isdigit():
+        FACTORY_HALL[int(y)][int(x)] = int(value)
     return jsonify(FACTORY_HALL)
 
 
