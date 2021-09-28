@@ -21,10 +21,26 @@ h1 {
   align-items: center;
   justify-content: center;
   background-color: #558dca;
-  height: 375;
-  width: 750;
+  height: 650;
+  width: 650;
   margin: auto;
   padding: 10px;
-  border-radius: 40px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.grid-container {
+  grid-template-columns: repeat(10, 1fr);
+  height: 625;
+  width: 625;
+  display: grid;
+  background-color: #CFCFCF;
+  padding: 10px;
+  grid-gap: 10px;
+}
+
+.grid-item{
+  background-color: #c8eff9;
+  border: 1px solid rgba(0, 0, 0, 0.8);
+  font-size: 30px;
+  text-align: center;
 }
