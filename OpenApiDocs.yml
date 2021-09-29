@@ -1,0 +1,237 @@
+openapi: "3.0.2"
+info:
+  title: RollenBollen-API
+  version: "1.0"
+servers:
+  - url: http://localhost/api
+tags:
+  - name: Command
+    description: Routes to make BOLT's move
+  - name: Client
+    description: Routes used in the Bolt client program
+  - name: Bolt
+    description: Get info from, and sends commands to the Bolts
+  - name: Path finding
+    description: Commands using the pathFinding algorithm
+  - name: Google Nest
+    description: Routes made for, and used by the Google Nest or Google Home
+  - name: Frontend
+    description: Api's made for, and used by the Frontend
+
+components:
+  schemas:
+    Swarm:
+      type: object
+      properties:
+        bolts:
+          type: array
+          items:
+            type: object
+            $ref: "#/components/schemas/Bolt"
+        counter:
+          type: integer
+          description: Counter for returning the next ID to the bolts
+    Maze:
+      type: object
+      properties:
+        maze:
+          type: array
+          items:
+            type: array
+            items:
+              type: integer
+          example: [[1, 1, 0], [1, 0, 0], [0, 0, 0]]
+    Bolt:
+      required:
+        - id
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        position:
+          type: object
+          $ref: "#/components/schemas/Position"
+        next_move:
+          type: object
+          $ref: "#/components/schemas/Next_Move"
+    Position:
+      type: object
+      properties:
+        x:
+          type: integer
+          example: 2
+        y:
+          type: integer
+          example: 4
+    Next_Move:
+      type: object
+      properties:
+        x:
+          type: integer
+          example: 1
+        y:
+          type: integer
+          example: 7
+
+paths:
+  /register:
+    get:
+      tags:
+        - Client
+      summary: Register a bolt
+      description: Register a bolt at the server
+      responses:
+        200:
+          description: Bolt is registered succesfull
+  /bolt:
+    get:
+      tags:
+        - Bolt
+      summary: Get info about all bolts
+      description: Get info about the bolts
+      responses:
+        200:
+          description: Return info about all bolts
+  /bolt/{id}:
+    get:
+      tags:
+        - Bolt
+      summary: Get info about a single bolt
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the bolt
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Succesfull operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Bolt"
+
+  /bolt/{id}/moved:
+    get:
+      tags:
+        - Bolt
+      summary: Set the position of a Bolt
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the bolt
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Succesfull operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Bolt"
+  /bolt/{id}/move:
+    get:
+      tags:
+        - Bolt
+        - Command
+      summary: Send a command to the Bolt
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the bolt
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Succesfull operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Bolt"
+  /bolt/{id}/goto:
+    get:
+      tags:
+        - Bolt
+        - Command
+        - Path finding
+      summary: Send a command to the Bolt via PathFinding
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the bolt
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Succesfull operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Bolt"
+  /bolt/{id}/command:
+    get:
+      tags:
+        - Bolt
+        - Client
+      summary: Get the command for a Bolt
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the bolt
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Succesfull operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Bolt"
+  /home:
+    get:
+      tags:
+        - Command
+        - Google Nest
+      summary: Send all bolts the the starting position
+      responses:
+        200:
+          description: Succesfull operation
+  /maze:
+    get:
+      tags:
+        - Frontend
+      summary: Get maze layout
+      responses:
+        200:
+          description: Succesfull operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Maze"
+  /nest/{code}:
+    get:
+      parameters:
+        - name: code
+          in: path
+          description: Position to send a bolt to
+          required: true
+          schema:
+            type: integer
+      tags:
+        - Google Nest
+        - Path finding
+      summary: The Nest-API route
+      description: Decode the code to send a bolt the the given position
+      responses:
+        200:
+          description: Succesfull operation

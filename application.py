@@ -69,7 +69,7 @@ def reset_webserver():
     swarm = Swarm()
     global paths
     paths = {}
-    return "Succes!"
+    return "Success!"
 
 
 # endregion
@@ -108,52 +108,43 @@ def api_bolt(code: int):
 @app.route("/api/bolt/<int:code>/moved", methods=["GET"])
 def api_bolt_move_x_y(code: int):
     """Move a BOLT."""
-    ret_string = "BOLT not found"
     if code:
         x = request.args.get("x")
         y = request.args.get("y")
         if x and x.isdigit() and y and y.isdigit():
             swarm.bolts[code - 1].set_position(x=int(x), y=int(y))
-            ret_string = f"BOLT<{code}> moved to {x}, {y}"
         elif x and x.isdigit():
             swarm.bolts[code - 1].set_position(x=int(x))
-            ret_string = f"BOLT<{code}> moved to {x}"
         elif y and y.isdigit():
             swarm.bolts[code - 1].set_position(y=int(y))
-            ret_string = f"BOLT<{code}> moved to {y}"
-    return ret_string
+    return jsonify(swarm.get_bolt(code))
 
 
 @app.route("/api/bolt/<int:code>/move", methods=["GET"])
 def api_bolt_set_next_move(code: int):
     """Set the next move of a BOLT."""
-    ret_string = "Request Failed!"
     if code:
         x = request.args.get("x")
         y = request.args.get("y")
         if x and x.isdigit() and y and y.isdigit():
             swarm.bolts[code - 1].set_next_move(x=int(x), y=int(y))
-            ret_string = f"Request Succes, moving BOLT<{code}> to x:{x}, y:{y}"
         elif x and x.isdigit():
             swarm.bolts[code - 1].set_next_move(x=int(x))
-            ret_string = f"Request Succes, moving BOLT<{code}> to x:{x}"
         elif y and y.isdigit():
             swarm.bolts[code - 1].set_next_move(y=int(y))
-            ret_string = f"Request Succes, moving BOLT<{code}> to y:{y}"
-    return ret_string
+    return jsonify(swarm.get_bolt(code))
 
 
 @app.route("/api/bolt/<int:code>/goto", methods=["GET"])
 def api_bolt_goto(code: int):
     """Set the next location of a BOLT."""
-    ret_string = "Request Failed!"
     if code:
         x = request.args.get("x")
         y = request.args.get("y")
         if x and x.isdigit() and y and y.isdigit():
             get_path(code, int(x), int(y))
-            ret_string = f"Request Succes, new location of BOLT<{code}> is x:{x}, y:{y}"
-    return ret_string
+            # TODO(Philip Bollen): Return path
+    return jsonify(swarm.get_bolt(code))
 
 
 def get_path(code: int, x: int, y: int):
@@ -171,7 +162,7 @@ def get_path(code: int, x: int, y: int):
 
 
 def optimize_path(path: List[Location]):
-    """Optimize the path so it will be run in less actions"""
+    """Optimize the path so it will be run in less actions."""
     counter = 0
     optimized_path: List[Location] = []
     optimized_path.append(path[0])
@@ -195,13 +186,10 @@ def get_bolt(x, y):
     min_dist = 100
     bolt_id = -1
     for bolt in swarm.bolts:
-        if (
-            calc_dist(bolt.position, x, y) < min_dist
-            and calc_dist(bolt.position, x, y) > 0
-            and not bolt.is_busy()
-        ):
+        curr_dist = calc_dist(bolt.position, x, y)
+        if not bolt.is_busy() and curr_dist < min_dist and curr_dist > 0:
             bolt_id = bolt.id
-            min_dist = calc_dist(bolt.position, x, y)
+            min_dist = curr_dist
     return bolt_id
 
 
@@ -236,6 +224,7 @@ def api_go_home():
     """Send all bolts to 0, 0 AKA Homebase."""
     for bolt in swarm.bolts:
         get_path(bolt.id, 0, 0)
+    return jsonify(swarm.get_bolts())
 
 
 # endregion
@@ -260,12 +249,13 @@ def api_nest_command(code: str):
 # region: Maze
 @app.route("/api/maze")
 def api_get_maze():
+    """Give the current maze, with options to edit the options."""
     x = request.args.get("x")
     y = request.args.get("y")
     value = request.args.get("v")
     if x and x.isdigit() and y and y.isdigit() and value and value.isdigit():
         FACTORY_HALL[int(y)][int(x)] = int(value)
-    return jsonify(FACTORY_HALL)
+    return jsonify({"maze": FACTORY_HALL})
 
 
 # endregion
