@@ -20,8 +20,7 @@
           const [cursor, setCursor] = React.useState("#C8EFF9")
           return (
             <div className="container">
-              <ButtonView 
-                cursor={cursor} 
+              <ButtonView
                 setCursor={setCursor} 
               />
               <GridView />
@@ -33,11 +32,11 @@
         function ButtonView(props) {
           return (
             <div className="button-div">
-              <div className="button" style={{backgroundColor:"#C8EFF9"}} onClick={() => props.setCursor("#C8EFF9")}><h2>tekst</h2></div>
-              <div className="button" style={{backgroundColor:"#48FFFF"}} onClick={() => props.setCursor("#48FFFF")}><h2>tekst</h2></div>
-              <div className="button" style={{backgroundColor:"#F27D42"}} onClick={() => props.setCursor("#F27D42")}><h2>tekst</h2></div>
-              <div className="button" style={{backgroundColor:"#022449"}} onClick={() => props.setCursor("#022449")}><h2>tekst</h2></div>
-              <div className="button" style={{backgroundColor:"#62C7A5"}} onClick={() => props.setCursor("#62C7A5")}><h2>tekst</h2></div>
+              <div className="button" style={{backgroundColor:"#C8EFF9"}} onClick={() => props.setCursor("#C8EFF9")}><h2 style={{color: 'grey'}}>Beschikbaar</h2></div>
+              <div className="button" style={{backgroundColor:"#ff0000"}} onClick={() => props.setCursor("#ff0000")}><h2>Obstakel</h2></div>
+              <div className="button" style={{backgroundColor:"#ffca2c"}} onClick={() => props.setCursor("#ffca2c")}><h2>Tussenstop</h2></div>
+              <div className="button" style={{backgroundColor:"#022449"}} onClick={() => props.setCursor("#022449")}><h2>Positie</h2></div>
+              <div className="button" style={{backgroundColor:"#62C7A5"}} onClick={() => props.setCursor("#62C7A5")}><h2>Doel</h2></div>
             </div>
           )
         }
@@ -45,12 +44,13 @@
         function GridView() {
           let grid = []
           for (let index = 0; index < 100; index++) {
-            grid.push(index);
+            // grid.push(index);
+            grid.push({index: index, util: 'none'})
           }
           return (
             <div className="box-map">
               <div className="grid-container">
-                {grid.map((grid, index) => <div className="grid-item" key={index}>{grid}</div>)}
+                {grid.map((element, i) => <div className="grid-item" key={grid[i].index} onClick={() => console.log(grid[i])}>{grid[i].index}</div>)}
               </div>
             </div>
           ) 
