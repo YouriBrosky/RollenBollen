@@ -19,12 +19,6 @@
     <!-- scripts -->
     <script type="text/babel">
       window.onload = function () {
-        class HelloClass extends React.Component {
-          render() {
-            return React.createElement('h1', null, 'React without npm..');
-          }
-        }
-
         class ButtonView extends React.Component {
           render() {
             return (
@@ -59,8 +53,8 @@
         ReactDOM.render(
           React.createElement(GridView, null, null),
           document.getElementById('box-map')
-        );
-      };
+        ); 
+      }
     </script>
   </body>
 </html>
