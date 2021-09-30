@@ -12,7 +12,6 @@ app: Flask = Flask(__name__, template_folder="templates")
 swarm: Swarm = Swarm()
 paths: Dict[int, Dict[str, Union[int, List[Location]]]] = {}
 
-
 FACTORY_HALL = [
     [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
     [1, 1, 1, 1, 0, 1, 1, 0, 1, 1],
@@ -73,8 +72,6 @@ def reset_webserver():
 
 
 # endregion
-
-
 # region: Api
 @app.route("/api", methods=["GET"])
 def api_index():
@@ -228,7 +225,6 @@ def api_go_home():
 
 
 # endregion
-
 # region: Nest
 @app.route("/api/nest/<code>")
 def api_nest_command(code: str):
@@ -244,7 +240,6 @@ def api_nest_command(code: str):
 
 
 # endregion
-
 # region: Maze
 @app.route("/api/maze")
 def api_get_maze():
@@ -261,7 +256,6 @@ def api_get_maze():
 
 
 # endregion
-
 # region: Custom Functions
 def digit(string_value: str):
     """Check if a value is a string and digit.
