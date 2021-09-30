@@ -7,26 +7,16 @@
       <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
       <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
       <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-      <!-- <script type="text/babel" src="script.js"></script> -->
       <link rel="stylesheet" href="stylesheet.css" />
   </head>
 
-  <body>
-
-    <div id="root"></div>
-    
+  <body>    
     <div class="container">
-      <div class="button-div"> 
-        <div class="button" style="background-color:#C8EFF9" onclick="alert('you clicked')"><h2>tekst</h2></div>
-        <div class="button" style="background-color:#48FFFF" onclick="alert('you clicked')"><h2>tekst</h2></div>
-        <div class="button" style="background-color:#F27D42" onclick="alert('you clicked')"><h2>tekst</h2></div>
-        <div class="button" style="background-color:#022449" onclick="alert('you clicked')"><h2>tekst</h2></div>
-        <div class="button" style="background-color:#62C7A5" onclick="alert('you clicked')"><h2>tekst</h2></div>
-      </div>
+      <div id="button-div"></div>
       <div class="box-map" id="box-map"></div>
     </div>
     
-    <!-- Chess-board -->
+    <!-- scripts -->
     <script type="text/babel">
       window.onload = function () {
         class HelloClass extends React.Component {
@@ -34,6 +24,25 @@
             return React.createElement('h1', null, 'React without npm..');
           }
         }
+
+        class ButtonView extends React.Component {
+          render() {
+            return (
+              <div className="button-div"> 
+                <div className="button" style={{backgroundColor:"#C8EFF9"}} onClick={() => alert('you clicked')}><h2>tekst</h2></div>
+                <div className="button" style={{backgroundColor:"#48FFFF"}} onClick={() => alert('you clicked')}><h2>tekst</h2></div>
+                <div className="button" style={{backgroundColor:"#F27D42"}} onClick={() => alert('you clicked')}><h2>tekst</h2></div>
+                <div className="button" style={{backgroundColor:"#022449"}} onClick={() => alert('you clicked')}><h2>tekst</h2></div>
+                <div className="button" style={{backgroundColor:"#62C7A5"}} onClick={() => alert('you clicked')}><h2>tekst</h2></div>
+              </div>
+              )
+          }
+        }
+        ReactDOM.render(
+          React.createElement(ButtonView, null, null),
+          document.getElementById('button-div')
+        );
+
         class GridView extends React.Component {
           render() {
             let grid = []
@@ -47,10 +56,6 @@
             )
           }
         }
-        // ReactDOM.render(
-        //   React.createElement(HelloClass, null, null),
-        //   document.getElementById('root')
-        // );
         ReactDOM.render(
           React.createElement(GridView, null, null),
           document.getElementById('box-map')
