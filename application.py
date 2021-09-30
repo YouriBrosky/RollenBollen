@@ -161,48 +161,6 @@ def get_path(code: int, x: int, y: int):
     swarm.bolts[code - 1].next_move = {"x": final_astar[-1].x, "y": final_astar[-1].y}
 
 
-def optimize_path(path: List[Location]):
-    """Optimize the path so it will be run in less actions."""
-    counter = 0
-    optimized_path: List[Location] = []
-    optimized_path.append(path[0])
-    x = path[counter].x
-    y = path[counter].y
-    counter += 1
-    while optimized_path[-1] != path[-1]:
-        while counter < len(path) and (path[counter].x == x or path[counter].y == y):
-            counter += 1
-        optimized_path.append(path[counter - 1])
-        if optimized_path[-1] != path[-1]:
-            x = path[counter].x
-            y = path[counter].y
-    optimized_path = optimized_path[1:]
-    return optimized_path
-
-
-def get_bolt(x, y):
-    """Get the id of the nearest Bolt to position x, y."""
-    global swarm
-    min_dist = 100
-    bolt_id = -1
-    for bolt in swarm.bolts:
-        curr_dist = calc_dist(bolt.position, x, y)
-        if not bolt.is_busy() and curr_dist < min_dist and curr_dist > 0:
-            bolt_id = bolt.id
-            min_dist = curr_dist
-    return bolt_id
-
-
-def calc_dist(xy_dict, x, y):
-    """Calc the length of a path from the Bolt to <x> and <y>."""
-    start = Location(x=int(xy_dict["x"]), y=int(xy_dict["y"]))
-    m = Maze(factory=FACTORY_HALL, start=start, finish=Location(x=x, y=y))
-    distance = manhattan_distance(m.finish)
-    final_astar, _ = astar(m.start, m.finish_line, m.frontier, distance)
-
-    return len(final_astar)
-
-
 @app.route("/api/bolt/<int:code>/command", methods=["GET"])
 def api_bolt_command(code: int):
     """Send a command to the bolt."""
@@ -217,6 +175,15 @@ def api_bolt_command(code: int):
     pos = swarm.bolts[code - 1].next_move
     swarm.bolts[code - 1].set_position(x=pos["x"], y=pos["y"])
     return jsonify(pos)
+
+
+@app.route("/api/bolt/<int:code>/path", methods=["GET"])
+def api_bolt_path(code: int):
+    """Send a command to the bolt."""
+    global paths
+    if code in paths and len(paths[code]["path"]) > 0:
+        return jsonify(paths[code]["path"])
+    return jsonify(swarm.bolts[code - 1].next_move)
 
 
 @app.route("/api/home")
@@ -262,6 +229,47 @@ def api_get_maze():
 
 
 # endregion
+
+
+def optimize_path(path: List[Location]):
+    """Optimize the path so it will be run in less actions."""
+    counter = 0
+    optimized_path: List[Location] = []
+    optimized_path.append(path[0])
+    x = path[counter].x
+    y = path[counter].y
+    counter += 1
+    while optimized_path[-1] != path[-1]:
+        while counter < len(path) and (path[counter].x == x or path[counter].y == y):
+            counter += 1
+        optimized_path.append(path[counter - 1])
+        if optimized_path[-1] != path[-1]:
+            x = path[counter].x
+            y = path[counter].y
+    optimized_path = optimized_path[1:]
+    return optimized_path
+
+
+def get_bolt(x, y):
+    """Get the id of the nearest Bolt to position x, y."""
+    global swarm
+    min_dist = 100
+    bolt_id = -1
+    for bolt in swarm.bolts:
+        curr_dist = calc_dist(bolt.position, x, y)
+        if not bolt.is_busy() and curr_dist < min_dist and curr_dist > 0:
+            bolt_id = bolt.id
+            min_dist = curr_dist
+    return bolt_id
+
+
+def calc_dist(xy_dict, x, y):
+    """Calc the length of a path from the Bolt to <x> and <y>."""
+    start = Location(x=int(xy_dict["x"]), y=int(xy_dict["y"]))
+    m = Maze(factory=FACTORY_HALL, start=start, finish=Location(x=x, y=y))
+    distance = manhattan_distance(m.finish)
+    final_astar, _ = astar(m.start, m.finish_line, m.frontier, distance)
+    return len(final_astar)
 
 
 if __name__ == "__main__":

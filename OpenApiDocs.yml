@@ -73,6 +73,14 @@ components:
         y:
           type: integer
           example: 7
+    Path:
+      type: object
+      properties:
+        path:
+          type: array
+          items:
+            type: object
+            $ref: "#/components/schemas/Position"
 
 paths:
   /register:
@@ -125,7 +133,6 @@ paths:
           required: true
           schema:
             type: integer
-            format: int64
       responses:
         200:
           description: Succesfull operation
@@ -146,7 +153,6 @@ paths:
           required: true
           schema:
             type: integer
-            format: int64
       responses:
         200:
           description: Succesfull operation
@@ -168,7 +174,6 @@ paths:
           required: true
           schema:
             type: integer
-            format: int64
       responses:
         200:
           description: Succesfull operation
@@ -189,7 +194,6 @@ paths:
           required: true
           schema:
             type: integer
-            format: int64
       responses:
         200:
           description: Succesfull operation
@@ -197,6 +201,26 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Bolt"
+  /bolt/{id}/path:
+    get:
+      tags:
+        - Frontend
+        - Bolt
+      summary: Get the current path of the Bolt
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the bolt
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Succesfull operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Path"
   /home:
     get:
       tags:
