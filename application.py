@@ -98,7 +98,18 @@ def api_list_bolts():
 
 @app.route("/api/bolt/<int:code>", methods=["GET"])
 def api_bolt(code: int):
-    """Get the details of a single BOLT."""
+    """Get the details of a single BOLT.
+
+    Parameters
+    ----------
+    code : int
+        The bolt id
+
+    Returns
+    -------
+    Bolt
+        The info about the bolt
+    """
     return_code = None
     if code:
         return_code = jsonify(swarm.get_bolt(code))
@@ -107,7 +118,18 @@ def api_bolt(code: int):
 
 @app.route("/api/bolt/<int:code>/moved", methods=["GET"])
 def api_bolt_move_x_y(code: int):
-    """Move a BOLT."""
+    """Move a BOLT.
+
+    Parameters
+    ----------
+    code : int
+        the id of the bolt
+
+    Returns
+    -------
+    Bolt
+        The info about the bolt
+    """
     if code:
         x = request.args.get("x")
         y = request.args.get("y")
@@ -122,7 +144,18 @@ def api_bolt_move_x_y(code: int):
 
 @app.route("/api/bolt/<int:code>/move", methods=["GET"])
 def api_bolt_set_next_move(code: int):
-    """Set the next move of a BOLT."""
+    """Set the next move of a BOLT.
+
+    Parameters
+    ----------
+    code : int
+        the id of the bolt
+
+    Returns
+    -------
+    Bolt
+        The info about the bolt
+    """
     if code:
         x = request.args.get("x")
         y = request.args.get("y")
@@ -137,7 +170,18 @@ def api_bolt_set_next_move(code: int):
 
 @app.route("/api/bolt/<int:code>/goto", methods=["GET"])
 def api_bolt_goto(code: int):
-    """Set the next location of a BOLT."""
+    """Set the next location of a BOLT.
+
+    Parameters
+    ----------
+    code : int
+        the id of the bolt
+
+    Returns
+    -------
+    Bolt
+        The info about the bolt
+    """
     if code:
         x = request.args.get("x")
         y = request.args.get("y")
@@ -157,7 +201,7 @@ def api_bolt_command(code: int):
         if paths[code]["counter"] == len(paths[code]["path"]):
             del paths[code]
         swarm.get_bolt_by_id(code).set_position(x=loc.x, y=loc.y)
-        return {"x": loc.x, "y": loc.y}
+        return jsonify({"x": loc.x, "y": loc.y})
     pos = swarm.get_bolt_by_id(code).next_move
     swarm.get_bolt_by_id(code).set_position(x=pos["x"], y=pos["y"])
     return jsonify(pos)
@@ -165,7 +209,7 @@ def api_bolt_command(code: int):
 
 @app.route("/api/bolt/<int:code>/path", methods=["GET"])
 def api_bolt_path(code: int):
-    """Send a command to the bolt."""
+    """Get the path from a given bolt."""
     if code in paths and len(paths[code]["path"]) > 0:
         x = paths[code]["path"][-1].x
         y = paths[code]["path"][-1].y
@@ -218,7 +262,7 @@ def api_get_maze():
 
 # endregion
 
-
+# region: Custom Functions
 def digit(string_value: str):
     """Check if a value is a string and digit.
 
@@ -262,7 +306,7 @@ def get_path(code: int, x: int, y: int):
 
 
 def set_path(code: int, path: List[Location]):
-    """Set the Path of Bolt[<code>]ю
+    """Set the Path of Bolt[<code>].
 
     Parameters
     ----------
@@ -280,7 +324,18 @@ def set_path(code: int, path: List[Location]):
 
 
 def optimize_path(path: List[Location]):
-    """Optimize the path so it will be run in less actions."""
+    """Optimize the path so it will be run in less actions.
+
+    Parameters
+    ----------
+    path : List[Location]
+        The original path
+
+    Returns
+    -------
+    List[Location]
+        The final optimized path
+    """
     counter = 0
     optimized_path: List[Location] = []
     optimized_path.append(path[0])
@@ -298,8 +353,21 @@ def optimize_path(path: List[Location]):
     return optimized_path
 
 
-def get_bolt(x, y):
-    """Get the id of the nearest Bolt to position x, y."""
+def get_bolt(x: int, y: int):
+    """Get the id of the nearest Bolt to position x, y.
+
+    Parameters
+    ----------
+    x : int
+        The x position
+    y : int
+        The y position
+
+    Returns
+    -------
+    int
+        The id of the nearest BOLT
+    """
     min_dist = 100
     bolt_id = -1
     for bolt in swarm.bolts:
@@ -310,14 +378,31 @@ def get_bolt(x, y):
     return bolt_id
 
 
-def calc_dist(xy_dict, x, y):
-    """Calc the length of a path from the Bolt to <x> and <y>."""
+def calc_dist(xy_dict: Dict[str, int], x: int, y: int):
+    """Calc the length of a path from the Bolt to <x> and <y>.
+
+    Parameters
+    ----------
+    xy_dict : Dict[str, int]
+        The x and y position of the BOLT
+    x : int
+        The end.x position
+    y : int
+        The end.y position
+
+    Returns
+    -------
+    int
+        The total length of the path
+    """
     start = Location(x=int(xy_dict["x"]), y=int(xy_dict["y"]))
     m = Maze(factory=FACTORY_HALL, start=start, finish=Location(x=x, y=y))
     distance = manhattan_distance(m.finish)
     final_astar, _ = astar(m.start, m.finish_line, m.frontier, distance)
     return len(final_astar)
 
+
+# endregion
 
 if __name__ == "__main__":
     app.run(port=80)
