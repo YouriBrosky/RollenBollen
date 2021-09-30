@@ -20,9 +20,10 @@
         const [cursor, setCursor] = React.useState("#C8EFF9")
         return (
           <div className="container">
-            <ButtonView
+            <div><ButtonView
               setCursor={setCursor}
-            />
+            /></div>
+
             <GridView cursor={cursor} />
           </div>
         )
@@ -34,11 +35,15 @@
           <div className="button-div">
             <div className="button" style={{ backgroundColor: "#C8EFF9" }} onClick={() => props.setCursor("#C8EFF9")}><h2 style={{ color: 'grey' }}>Beschikbaar</h2></div>
             <div className="button" style={{ backgroundColor: "#ff0000" }} onClick={() => props.setCursor("#ff0000")}><h2>Obstakel</h2></div>
-            <div className="button" style={{ backgroundColor: "#ffca2c" }} onClick={() => props.setCursor("#ffca2c")}><h2>Tussenstop</h2></div>
-            <div className="button" style={{ backgroundColor: "#022449" }} onClick={() => props.setCursor("#022449")}><h2>Positie</h2></div>
-            <div className="button" style={{ backgroundColor: "#62C7A5" }} onClick={() => props.setCursor("#62C7A5")}><h2>Doel</h2></div>
+            <div className="button" style={{ backgroundColor: "#ffca2c" }}><h2>Tussenstop</h2></div>
+            <div className="button" style={{ backgroundColor: "#022449" }}><h2>Positie</h2></div>
+            <div className="button" style={{ backgroundColor: "#62C7A5" }}><h2>Doel</h2></div>
           </div>
         )
+      }
+
+      function BoltView() {
+        // hier iets over de positie vn de bolts
       }
 
       function GridView(props) {
@@ -49,7 +54,6 @@
 
         const changeGrid = (item) => {
           grids[item].util = props.cursor
-          console.log(grids)
         }
 
         return (
@@ -65,6 +69,13 @@
     function Grid(props) {
       const [color, setColor] = React.useState(props.item.util)
 
+      const onChangeGrid = () => {
+        if (props.cursor != color) {
+          console.log('send request')
+
+        }
+      }
+
       return (
         <div
           className="grid-item"
@@ -72,7 +83,7 @@
           onClick={() => {
             props.changeGrid()
             setColor(props.cursor)
-            console.log(props.item)
+            onChangeGrid()
           }}
         >
           {props.item.index}
