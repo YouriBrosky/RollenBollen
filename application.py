@@ -111,12 +111,12 @@ def api_bolt_move_x_y(code: int):
     if code:
         x = request.args.get("x")
         y = request.args.get("y")
-        if x and x.isdigit() and y and y.isdigit():
-            swarm.bolts[code - 1].set_position(x=int(x), y=int(y))
-        elif x and x.isdigit():
-            swarm.bolts[code - 1].set_position(x=int(x))
-        elif y and y.isdigit():
-            swarm.bolts[code - 1].set_position(y=int(y))
+        if digit(x) and digit(y):
+            swarm.get_bolt_by_id(code).set_position(x=int(x), y=int(y))
+        elif digit(x):
+            swarm.get_bolt_by_id(code).set_position(x=int(x))
+        elif digit(y):
+            swarm.get_bolt_by_id(code).set_position(y=int(y))
     return jsonify(swarm.get_bolt(code))
 
 
@@ -126,12 +126,12 @@ def api_bolt_set_next_move(code: int):
     if code:
         x = request.args.get("x")
         y = request.args.get("y")
-        if x and x.isdigit() and y and y.isdigit():
-            swarm.bolts[code - 1].set_next_move(x=int(x), y=int(y))
-        elif x and x.isdigit():
-            swarm.bolts[code - 1].set_next_move(x=int(x))
-        elif y and y.isdigit():
-            swarm.bolts[code - 1].set_next_move(y=int(y))
+        if digit(x) and digit(y):
+            swarm.get_bolt_by_id(code).set_next_move(x=int(x), y=int(y))
+        elif digit(x):
+            swarm.get_bolt_by_id(code).set_next_move(x=int(x))
+        elif digit(y):
+            swarm.get_bolt_by_id(code).set_next_move(y=int(y))
     return jsonify(swarm.get_bolt(code))
 
 
@@ -141,56 +141,45 @@ def api_bolt_goto(code: int):
     if code:
         x = request.args.get("x")
         y = request.args.get("y")
-        if x and x.isdigit() and y and y.isdigit():
-            get_path(code, int(x), int(y))
-            # TODO(Philip Bollen): Return path
+        if digit(x) and digit(y):
+            route = get_path(code, int(x), int(y))
+            set_path(code, route)
+            return jsonify({"path": route})
     return jsonify(swarm.get_bolt(code))
-
-
-def get_path(code: int, x: int, y: int):
-    """Get a path via A* for the given BOLT and coordinates."""
-    global swarm
-    pos = swarm.bolts[code - 1].position
-    start = Location(x=int(pos["x"]), y=int(pos["y"]))
-    m = Maze(factory=FACTORY_HALL, start=start, finish=Location(x=x, y=y))
-    distance = manhattan_distance(m.finish)
-    final_astar, _ = astar(m.start, m.finish_line, m.frontier, distance)
-    final_astar.append(m.finish)
-    final_path = optimize_path(final_astar)
-    paths[code] = {"path": final_path, "counter": 0}
-    swarm.bolts[code - 1].next_move = {"x": final_astar[-1].x, "y": final_astar[-1].y}
 
 
 @app.route("/api/bolt/<int:code>/command", methods=["GET"])
 def api_bolt_command(code: int):
     """Send a command to the bolt."""
-    global paths
     if code in paths and len(paths[code]["path"]) > 0:
         loc: Location = paths[code]["path"][paths[code]["counter"]]
         paths[code]["counter"] += 1
         if paths[code]["counter"] == len(paths[code]["path"]):
             del paths[code]
-        swarm.bolts[code - 1].set_position(x=loc.x, y=loc.y)
+        swarm.get_bolt_by_id(code).set_position(x=loc.x, y=loc.y)
         return {"x": loc.x, "y": loc.y}
-    pos = swarm.bolts[code - 1].next_move
-    swarm.bolts[code - 1].set_position(x=pos["x"], y=pos["y"])
+    pos = swarm.get_bolt_by_id(code).next_move
+    swarm.get_bolt_by_id(code).set_position(x=pos["x"], y=pos["y"])
     return jsonify(pos)
 
 
 @app.route("/api/bolt/<int:code>/path", methods=["GET"])
 def api_bolt_path(code: int):
     """Send a command to the bolt."""
-    global paths
     if code in paths and len(paths[code]["path"]) > 0:
-        return jsonify(paths[code]["path"])
-    return jsonify(swarm.bolts[code - 1].next_move)
+        x = paths[code]["path"][-1].x
+        y = paths[code]["path"][-1].y
+        route = get_path(code=code, x=x, y=y)
+        return jsonify({"path": route})
+    return jsonify(swarm.get_bolt_by_id(code).next_move)
 
 
 @app.route("/api/home")
 def api_go_home():
     """Send all bolts to 0, 0 AKA Homebase."""
     for bolt in swarm.bolts:
-        get_path(bolt.id, 0, 0)
+        route = get_path(bolt.id, 0, 0)
+        set_path(bolt.id, route)
     return jsonify(swarm.get_bolts())
 
 
@@ -204,11 +193,10 @@ def api_nest_command(code: str):
         code = "0" + code
     x = int(code[0])
     y = int(code[1])
-
     bolt_code = get_bolt(x, y)
-    get_path(bolt_code, x, y)
-
-    return f"<h1>NEST</h1><br><p>bolt:{bolt_code} GOTO x:{x}, y:{y}</p>"
+    route = get_path(bolt_code, x, y)
+    set_path(bolt_code, route)
+    return {"bolt": bolt_code, "path": route}
 
 
 # endregion
@@ -220,7 +208,7 @@ def api_get_maze():
     x = request.args.get("x")
     y = request.args.get("y")
     value = request.args.get("v")
-    if x and x.isdigit() and y and y.isdigit() and value and value.isdigit():
+    if digit(x) and digit(y) and digit(value):
         FACTORY_HALL[int(y)][int(x)] = int(value)
     return jsonify({"maze": FACTORY_HALL})
 
@@ -229,6 +217,66 @@ def api_get_maze():
 
 
 # endregion
+
+
+def digit(string_value: str):
+    """Check if a value is a string and digit.
+
+    Parameters
+    ----------
+    string_value : str
+        The string which should be a digit
+
+    Returns
+    -------
+    Boolean
+        is digit
+    """
+    return string_value and string_value.isdigit()
+
+
+def get_path(code: int, x: int, y: int):
+    """Get a path via A* for the given BOLT and coordinates.
+
+    Parameters
+    ----------
+    code : int
+        The id of the bolt
+    x : int
+        the x position
+    y : int
+        the y postition
+
+    Returns
+    -------
+    List[Location]
+        The final route from the current postition to the end position
+    """
+    pos = swarm.get_bolt_by_id(code).position
+    start = Location(x=int(pos["x"]), y=int(pos["y"]))
+    m = Maze(factory=FACTORY_HALL, start=start, finish=Location(x=x, y=y))
+    distance = manhattan_distance(m.finish)
+    final_astar, _ = astar(m.start, m.finish_line, m.frontier, distance)
+    final_astar.append(m.finish)
+    return final_astar
+
+
+def set_path(code: int, path: List[Location]):
+    """Set the Path of Bolt[<code>]ю
+
+    Parameters
+    ----------
+    code : int
+        The id of the bolt
+    path : List[Location]
+        The path (pre-optimization)
+    """
+    final_path = optimize_path(path)
+    paths[code] = {"path": final_path, "counter": 0}
+    swarm.get_bolt_by_id(code).next_move = {
+        "x": final_path[-1].x,
+        "y": final_path[-1].y,
+    }
 
 
 def optimize_path(path: List[Location]):
@@ -252,7 +300,6 @@ def optimize_path(path: List[Location]):
 
 def get_bolt(x, y):
     """Get the id of the nearest Bolt to position x, y."""
-    global swarm
     min_dist = 100
     bolt_id = -1
     for bolt in swarm.bolts:

@@ -61,3 +61,9 @@ class Swarm:
         if code <= len(self.bolts):
             return self.bolts[code - 1].__dict__
         return None
+
+    def get_bolt_by_id(self, code: int):
+        """Get the details of a single BOLT."""
+        if code <= len(self.bolts):
+            return self.bolts[code - 1]
+        return None
