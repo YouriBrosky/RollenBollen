@@ -11,49 +11,50 @@
   </head>
 
   <body>    
-    <div class="container">
-      <div id="button-div"></div>
-      <div class="box-map" id="box-map"></div>
-    </div>
+    <div id="root"></div>
     
     <!-- scripts -->
     <script type="text/babel">
       window.onload = function () {
-        class ButtonView extends React.Component {
-          render() {
-            return (
-              <div className="button-div"> 
-                <div className="button" style={{backgroundColor:"#C8EFF9"}} onClick={() => alert('you clicked')}><h2>tekst</h2></div>
-                <div className="button" style={{backgroundColor:"#48FFFF"}} onClick={() => alert('you clicked')}><h2>tekst</h2></div>
-                <div className="button" style={{backgroundColor:"#F27D42"}} onClick={() => alert('you clicked')}><h2>tekst</h2></div>
-                <div className="button" style={{backgroundColor:"#022449"}} onClick={() => alert('you clicked')}><h2>tekst</h2></div>
-                <div className="button" style={{backgroundColor:"#62C7A5"}} onClick={() => alert('you clicked')}><h2>tekst</h2></div>
-              </div>
-              )
-          }
+        function App() {
+          const [cursor, setCursor] = React.useState("#C8EFF9")
+          return (
+            <div className="container">
+              <ButtonView 
+                cursor={cursor} 
+                setCursor={setCursor} 
+              />
+              <GridView />
+            </div>
+          )
         }
-        ReactDOM.render(
-          React.createElement(ButtonView, null, null),
-          document.getElementById('button-div')
-        );
+        ReactDOM.render(<App />, document.getElementById('root'));
 
-        class GridView extends React.Component {
-          render() {
-            let grid = []
-            for (let index = 0; index < 100; index++) {
-              grid.push(index);
-            }
-            return (
+        function ButtonView(props) {
+          return (
+            <div className="button-div">
+              <div className="button" style={{backgroundColor:"#C8EFF9"}} onClick={() => props.setCursor("#C8EFF9")}><h2>tekst</h2></div>
+              <div className="button" style={{backgroundColor:"#48FFFF"}} onClick={() => props.setCursor("#48FFFF")}><h2>tekst</h2></div>
+              <div className="button" style={{backgroundColor:"#F27D42"}} onClick={() => props.setCursor("#F27D42")}><h2>tekst</h2></div>
+              <div className="button" style={{backgroundColor:"#022449"}} onClick={() => props.setCursor("#022449")}><h2>tekst</h2></div>
+              <div className="button" style={{backgroundColor:"#62C7A5"}} onClick={() => props.setCursor("#62C7A5")}><h2>tekst</h2></div>
+            </div>
+          )
+        }
+
+        function GridView() {
+          let grid = []
+          for (let index = 0; index < 100; index++) {
+            grid.push(index);
+          }
+          return (
+            <div className="box-map">
               <div className="grid-container">
                 {grid.map((grid, index) => <div className="grid-item" key={index}>{grid}</div>)}
               </div>
-            )
-          }
+            </div>
+          ) 
         }
-        ReactDOM.render(
-          React.createElement(GridView, null, null),
-          document.getElementById('box-map')
-        ); 
       }
     </script>
   </body>
