@@ -29,6 +29,13 @@ class Bolt:
         if y is not None:
             self.position["y"] = y
 
+    def is_busy(self):
+        """Determine if the bolt still has a task at hand."""
+        return not (
+            self.next_move["x"] == self.position["x"]
+            and self.next_move["y"] == self.position["y"]
+        )
+
 
 class Swarm:
     """A Swarm is a group of BOLT working together."""
