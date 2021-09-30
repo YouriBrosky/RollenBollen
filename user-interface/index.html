@@ -1,81 +1,85 @@
 <html>
 
-  <head>
-    <title>RollenBollen</title>
-      <!-- <!– Load React. afblijven met de tengels –>
+<head>
+  <title>RollenBollen</title>
+  <!-- <!– Load React. afblijven met de tengels –>
       <!– Note: when deploying, replace “development.js” with “production.min.js”. –> -->
-      <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
-      <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
-      <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-      <link rel="stylesheet" href="stylesheet.css" />
-  </head>
+  <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <link rel="stylesheet" href="stylesheet.css" />
+</head>
 
-  <body>    
-    <div id="root"></div>
-    
-    <!-- scripts -->
-    <script type="text/babel">
-      window.onload = function () {
-        function App() {
-          const [cursor, setCursor] = React.useState("#C8EFF9")
-          return (
-            <div className="container">
-              <ButtonView
-                setCursor={setCursor} 
-              />
-              <GridView cursor={cursor}/>
-            </div>
-          )
-        }
-        ReactDOM.render(<App />, document.getElementById('root'));
+<body>
+  <div id="root"></div>
 
-        function ButtonView(props) {
-          return (
-            <div className="button-div">
-              <div className="button" style={{backgroundColor:"#C8EFF9"}} onClick={() => props.setCursor("#C8EFF9")}><h2 style={{color: 'grey'}}>Beschikbaar</h2></div>
-              <div className="button" style={{backgroundColor:"#ff0000"}} onClick={() => props.setCursor("#ff0000")}><h2>Obstakel</h2></div>
-              <div className="button" style={{backgroundColor:"#ffca2c"}} onClick={() => props.setCursor("#ffca2c")}><h2>Tussenstop</h2></div>
-              <div className="button" style={{backgroundColor:"#022449"}} onClick={() => props.setCursor("#022449")}><h2>Positie</h2></div>
-              <div className="button" style={{backgroundColor:"#62C7A5"}} onClick={() => props.setCursor("#62C7A5")}><h2>Doel</h2></div>
-            </div>
-          )
-        }
-
-        function GridView(props) {
-          let grid = []
-          for (let index = 0; index < 100; index++) {
-            // grid.push(index);
-            grid.push({index: index, util: "#C8EFF9"})
-          }
-
-          // const setUtil = (item) => {
-          //   grid[item].util = props.cursor
-          // }
-
-          return (
-            <div className="box-map">
-              <div className="grid-container">
-                {grid.map((element, index) => <Grid item={element} key={grid[index].index} setUtil={() => element.util = props.cursor}/>)}
-              </div>
-            </div>
-          ) 
-        }
-      }
-
-      function Grid(props) {
+  <!-- scripts -->
+  <script type="text/babel">
+    window.onload = function () {
+      function App() {
+        const [cursor, setCursor] = React.useState("#C8EFF9")
         return (
-          <div 
-            className="grid-item" 
-            style={{backgroundColor: props.item.util}} 
-            onClick={() => {
-              props.setUtil
-              console.log(props.item)
-            }}
-          >
-            {props.item.index}
+          <div className="container">
+            <ButtonView
+              setCursor={setCursor}
+            />
+            <GridView cursor={cursor} />
           </div>
         )
       }
-    </script>
-  </body>
+      ReactDOM.render(<App />, document.getElementById('root'));
+
+      function ButtonView(props) {
+        return (
+          <div className="button-div">
+            <div className="button" style={{ backgroundColor: "#C8EFF9" }} onClick={() => props.setCursor("#C8EFF9")}><h2 style={{ color: 'grey' }}>Beschikbaar</h2></div>
+            <div className="button" style={{ backgroundColor: "#ff0000" }} onClick={() => props.setCursor("#ff0000")}><h2>Obstakel</h2></div>
+            <div className="button" style={{ backgroundColor: "#ffca2c" }} onClick={() => props.setCursor("#ffca2c")}><h2>Tussenstop</h2></div>
+            <div className="button" style={{ backgroundColor: "#022449" }} onClick={() => props.setCursor("#022449")}><h2>Positie</h2></div>
+            <div className="button" style={{ backgroundColor: "#62C7A5" }} onClick={() => props.setCursor("#62C7A5")}><h2>Doel</h2></div>
+          </div>
+        )
+      }
+
+      function GridView(props) {
+        let grids = []
+        for (let index = 0; index < 100; index++) {
+          grids.push({ index: index, util: "#C8EFF9" })
+        }
+
+        const changeGrid = (item) => {
+          grids[item].util = props.cursor
+          console.log(grids)
+        }
+
+        return (
+          <div className="box-map">
+            <div className="grid-container">
+              {grids.map((element, index) => <Grid item={element} key={grids[index].index} changeGrid={() => changeGrid(index)} cursor={props.cursor} />)}
+            </div>
+          </div>
+        )
+      }
+    }
+
+    function Grid(props) {
+      const [color, setColor] = React.useState(props.item.util)
+
+      return (
+        <div
+          className="grid-item"
+          style={{ backgroundColor: color }}
+          onClick={() => {
+            props.changeGrid()
+            setColor(props.cursor)
+            console.log(props.item)
+          }}
+        >
+          {props.item.index}
+        </div>
+      )
+    }
+  </script>
+</body>
+
 </html>
