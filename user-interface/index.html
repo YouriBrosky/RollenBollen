@@ -23,7 +23,7 @@
               <ButtonView
                 setCursor={setCursor} 
               />
-              <GridView />
+              <GridView cursor={cursor}/>
             </div>
           )
         }
@@ -41,20 +41,40 @@
           )
         }
 
-        function GridView() {
+        function GridView(props) {
           let grid = []
           for (let index = 0; index < 100; index++) {
             // grid.push(index);
-            grid.push({index: index, util: 'none'})
+            grid.push({index: index, util: "#C8EFF9"})
           }
+
+          // const setUtil = (item) => {
+          //   grid[item].util = props.cursor
+          // }
+
           return (
             <div className="box-map">
               <div className="grid-container">
-                {grid.map((element, i) => <div className="grid-item" key={grid[i].index} onClick={() => console.log(grid[i])}>{grid[i].index}</div>)}
+                {grid.map((element, index) => <Grid item={element} key={grid[index].index} setUtil={() => element.util = props.cursor}/>)}
               </div>
             </div>
           ) 
         }
+      }
+
+      function Grid(props) {
+        return (
+          <div 
+            className="grid-item" 
+            style={{backgroundColor: props.item.util}} 
+            onClick={() => {
+              props.setUtil
+              console.log(props.item)
+            }}
+          >
+            {props.item.index}
+          </div>
+        )
       }
     </script>
   </body>
