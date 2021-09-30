@@ -17,29 +17,47 @@
   <script type="text/babel">
     window.onload = function () {
       function App() {
-        const [cursor, setCursor] = React.useState("#C8EFF9")
+        const [cursor, setCursor] = React.useState("#C8EFF9");
         return (
           <div className="container">
-            <div><ButtonView
-              setCursor={setCursor}
-            /></div>
+            <div>
+              <ButtonView setCursor={setCursor} />
+            </div>
 
             <GridView cursor={cursor} />
           </div>
-        )
+        );
       }
-      ReactDOM.render(<App />, document.getElementById('root'));
+      ReactDOM.render(<App />, document.getElementById("root"));
 
       function ButtonView(props) {
         return (
           <div className="button-div">
-            <div className="button" style={{ backgroundColor: "#C8EFF9" }} onClick={() => props.setCursor("#C8EFF9")}><h2 style={{ color: 'grey' }}>Beschikbaar</h2></div>
-            <div className="button" style={{ backgroundColor: "#ff0000" }} onClick={() => props.setCursor("#ff0000")}><h2>Obstakel</h2></div>
-            <div className="button" style={{ backgroundColor: "#ffca2c" }}><h2>Tussenstop</h2></div>
-            <div className="button" style={{ backgroundColor: "#022449" }}><h2>Positie</h2></div>
-            <div className="button" style={{ backgroundColor: "#62C7A5" }}><h2>Doel</h2></div>
+            <div
+              className="button"
+              style={{ backgroundColor: "#C8EFF9" }}
+              onClick={() => props.setCursor("#C8EFF9")}
+            >
+              <h2 style={{ color: "grey" }}>Beschikbaar</h2>
+            </div>
+            <div
+              className="button"
+              style={{ backgroundColor: "#ff0000" }}
+              onClick={() => props.setCursor("#ff0000")}
+            >
+              <h2>Obstakel</h2>
+            </div>
+            <div className="button" style={{ backgroundColor: "#ffca2c" }}>
+              <h2>Tussenstop</h2>
+            </div>
+            <div className="button" style={{ backgroundColor: "#022449" }}>
+              <h2>Positie</h2>
+            </div>
+            <div className="button" style={{ backgroundColor: "#62C7A5" }}>
+              <h2>Doel</h2>
+            </div>
           </div>
-        )
+        );
       }
 
       function BoltView() {
@@ -47,48 +65,54 @@
       }
 
       function GridView(props) {
-        let grids = []
+        let grids = [];
         for (let index = 0; index < 100; index++) {
-          grids.push({ index: index, util: "#C8EFF9" })
+          grids.push({ index: index, util: "#C8EFF9" });
         }
 
         const changeGrid = (item) => {
-          grids[item].util = props.cursor
-        }
+          grids[item].util = props.cursor;
+        };
 
         return (
           <div className="box-map">
             <div className="grid-container">
-              {grids.map((element, index) => <Grid item={element} key={grids[index].index} changeGrid={() => changeGrid(index)} cursor={props.cursor} />)}
+              {grids.map((element, index) => (
+                <Grid
+                  item={element}
+                  key={grids[index].index}
+                  changeGrid={() => changeGrid(index)}
+                  cursor={props.cursor}
+                />
+              ))}
             </div>
           </div>
-        )
+        );
       }
-    }
+    };
 
     function Grid(props) {
-      const [color, setColor] = React.useState(props.item.util)
+      const [color, setColor] = React.useState(props.item.util);
 
       const onChangeGrid = () => {
         if (props.cursor != color) {
-          console.log('send request')
-
+          console.log("send request");
         }
-      }
+      };
 
       return (
         <div
           className="grid-item"
           style={{ backgroundColor: color }}
           onClick={() => {
-            props.changeGrid()
-            setColor(props.cursor)
-            onChangeGrid()
+            props.changeGrid();
+            setColor(props.cursor);
+            onChangeGrid();
           }}
         >
           {props.item.index}
         </div>
-      )
+      );
     }
   </script>
 </body>
