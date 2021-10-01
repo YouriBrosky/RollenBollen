@@ -78,7 +78,7 @@ def page_home():
     )
 
 
-@app.route("/reset", methods=["GET"])
+@app.route("/api/reset", methods=["GET"])
 def reset_webserver():
     """Reset the server."""
     global swarm
