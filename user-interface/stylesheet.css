@@ -32,10 +32,16 @@ h2 {
   justify-content: center;
 }
 
+.side-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
 .box-map {
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
+  /* justify-content: space-evenly; */
   background-color: #558dca;
   height: 650;
   width: 650;
@@ -74,6 +80,31 @@ h2 {
 }
 
 .button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40;
+  width: 225;
+  border-radius: 10px;
+  user-select: none;
+}
+
+.bolt-div {
+  grid-template-columns: repeat(1, 1fr);
+  grid-gap: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #558dca;
+  height: 370;
+  width: 230;
+  border-radius: 10px;
+  margin-right: 10px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.bolt {
   display: flex;
   align-items: center;
   justify-content: center;

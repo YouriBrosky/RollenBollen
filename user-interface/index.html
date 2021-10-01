@@ -16,15 +16,42 @@
   <!-- scripts -->
   <script type="text/babel">
     window.onload = function () {
-      function App() {
+      function App(props) {
         const [cursor, setCursor] = React.useState("#C8EFF9");
+        const [grids, setGrids] = React.useState([]);
+
+        React.useEffect(() => {
+          const getMaze= async () => {
+            const response = await fetch('https://rollenbollen.azurewebsites.net/api/maze');
+            const json = await response.json();
+
+            const maze = json.maze // JSON is object with property 'maze'
+
+            let array = []
+            for(var i = 0; i < maze.length; i++) {
+              for(var j = 0; j < maze[i].length; j++) {
+                array.push(
+                  {
+                    index: i * 10 + j, 
+                    util: maze[i][j] == 0 ? 
+                      ('#C8EFF9') : //available
+                      ('#ff0000')   //obstacle
+                  }
+                )
+              }
+            }  
+            setGrids(array)
+          }
+          getMaze()
+        }, []);
+
         return (
           <div className="container">
-            <div>
+            <div className="side-container">
               <ButtonView setCursor={setCursor} />
+              <BoltView onClick={() =>console.log(grids)}/>
             </div>
-
-            <GridView cursor={cursor} />
+            {grids != [] ? (<GridView cursor={cursor} grids={grids} />) : (null)}
           </div>
         );
       }
@@ -43,7 +70,7 @@
             <div
               className="button"
               style={{ backgroundColor: "#ff0000" }}
-              onClick={() => props.setCursor("#ff0000")}
+              onClick={() => props.setCursor("#ff0000")} // dit fixen
             >
               <h2>Obstakel</h2>
             </div>
@@ -61,7 +88,19 @@
       }
 
       function BoltView() {
-        // hier iets over de positie vn de bolts
+        return (
+          <div className="bolt-div">
+            <div className="bolt" style={{ backgroundColor: "#022449" }}></div>
+            <div className="bolt" style={{ backgroundColor: "#022449" }}></div>
+            <div className="bolt" style={{ backgroundColor: "#022449" }}></div>
+            <div className="bolt" style={{ backgroundColor: "#022449" }}></div>
+            <div className="bolt" style={{ backgroundColor: "#022449" }}></div>
+            <div className="bolt" style={{ backgroundColor: "#022449" }}></div>
+            <div className="bolt" style={{ backgroundColor: "#022449" }}></div>
+            <div className="bolt" style={{ backgroundColor: "#022449" }}></div>
+            <div className="bolt" style={{ backgroundColor: "#022449" }}></div>
+          </div>
+        )
       }
 
       function GridView(props) {
@@ -70,21 +109,22 @@
           grids.push({ index: index, util: "#C8EFF9" });
         }
 
-        const changeGrid = (item) => {
+        const changeGrid = (item) => { // dit fixen
           grids[item].util = props.cursor;
         };
 
         return (
           <div className="box-map">
             <div className="grid-container">
-              {grids.map((element, index) => (
-                <Grid
-                  item={element}
-                  key={grids[index].index}
-                  changeGrid={() => changeGrid(index)}
-                  cursor={props.cursor}
-                />
-              ))}
+                 {props.grids.map((element, index) => (
+                  <Grid
+                    item={element}
+                    key={props.grids[index].index}
+                    changeGrid={() => changeGrid(index)}
+                    cursor={props.cursor}
+                  /> 
+                ))
+              }
             </div>
           </div>
         );
@@ -96,16 +136,18 @@
 
       const onChangeGrid = () => {
         if (props.cursor != color) {
-          console.log("send request");
+          props.changeGrid(); // dit fixen
+
+          // userAction()
+          }
         }
-      };
 
       return (
         <div
           className="grid-item"
           style={{ backgroundColor: color }}
           onClick={() => {
-            props.changeGrid();
+            
             setColor(props.cursor);
             onChangeGrid();
           }}
@@ -114,6 +156,7 @@
         </div>
       );
     }
+    
   </script>
 </body>
 
