@@ -258,3 +258,6 @@ $RECYCLE.BIN/
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 
 clean.ps1
+__pycache__/bolt.cpython-38.pyc
+__pycache__/maze_maker.cpython-38.pyc
+__pycache__/maze_search.cpython-38.pyc
