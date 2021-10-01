@@ -310,7 +310,7 @@ def set_path(code: int, path: List[Location]):
     path : List[Location]
         The path (pre-optimization)
     """
-    final_path = path
+    final_path = optimize_path(path)
     paths[code] = {"path": final_path, "counter": 0}
     swarm.get_bolt_by_id(code).next_move = {
         "x": final_path[-1].x,
@@ -318,34 +318,34 @@ def set_path(code: int, path: List[Location]):
     }
 
 
-# def optimize_path(path: List[Location]):
-#     """Optimize the path so it will be run in less actions.
+def optimize_path(path: List[Location]):
+    """Optimize the path so it will be run in less actions.
 
-#     Parameters
-#     ----------
-#     path : List[Location]
-#         The original path
+    Parameters
+    ----------
+    path : List[Location]
+        The original path
 
-#     Returns
-#     -------
-#     List[Location]
-#         The final optimized path
-#     """
-#     counter = 0
-#     optimized_path: List[Location] = []
-#     optimized_path.append(path[0])
-#     x = path[counter].x
-#     y = path[counter].y
-#     counter += 1
-#     while optimized_path[-1] != path[-1]:
-#         while counter < len(path) and (path[counter].x == x or path[counter].y == y):
-#             counter += 1
-#         optimized_path.append(path[counter - 1])
-#         if optimized_path[-1] != path[-1]:
-#             x = path[counter].x
-#             y = path[counter].y
-#     optimized_path = optimized_path[1:]
-#     return optimized_path
+    Returns
+    -------
+    List[Location]
+        The final optimized path
+    """
+    counter = 0
+    optimized_path: List[Location] = []
+    optimized_path.append(path[0])
+    x = path[counter].x
+    y = path[counter].y
+    counter += 1
+    while optimized_path[-1] != path[-1]:
+        while counter < len(path) and (path[counter].x == x or path[counter].y == y):
+            counter += 1
+        optimized_path.append(path[counter - 1])
+        if optimized_path[-1] != path[-1]:
+            x = path[counter - 1].x
+            y = path[counter - 1].y
+    optimized_path = optimized_path[1:]
+    return optimized_path
 
 
 def get_bolt(x: int, y: int):
