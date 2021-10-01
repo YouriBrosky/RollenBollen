@@ -4,6 +4,10 @@ info:
   version: "1.0"
 servers:
   - url: http://localhost/api
+    description: The test environment
+  - url: http://rollenbollen.azurewebsites.net/api
+    description: The production/demo environment
+
 tags:
   - name: Command
     description: Routes to make BOLT's move
@@ -314,3 +318,13 @@ paths:
       responses:
         200:
           description: Succesfull operation
+  /reset:
+    get:
+      tags:
+        - Command
+      summary: Reset the server
+      description: Reset the bolt values and paths on the server
+      responses:
+        200:
+          description: Succesfull operation
+          content: "Success!"
