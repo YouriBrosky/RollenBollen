@@ -29,8 +29,20 @@ FACTORY_HALL = [
 # region: Pages
 @app.route("/", methods=["GET", "POST"])
 def page_home():
+    sx = request.args.get("sx")
+    sy = request.args.get("sy")
+    fx = request.args.get("fx")
+    fy = request.args.get("fy")
+    if digit(sx) and digit(sy):
+        start = Location(y=int(sx), x=int(sy))
+    else:
+        start = Location(x=0, y=0)
+    if digit(fx) and digit(fy):
+        finish = Location(y=int(fx), x=int(fy))
+    else:
+        finish = Location(x=9, y=0)
     """Return the home page of the website."""
-    m = Maze(factory=FACTORY_HALL)
+    m = Maze(factory=FACTORY_HALL, start=start, finish=finish)
     if request.method == "POST" and request.form["rand"] == "loc":
         # Section: New random finish
         rand_x = np.random.choice(np.arange(10))
@@ -39,11 +51,15 @@ def page_home():
             if rand_x != 0
             else np.random.choice(np.arange(1, 10))
         )
-        m = Maze(factory=FACTORY_HALL, finish=Location(x=rand_x, y=rand_y))
+        m = Maze(
+            factory=FACTORY_HALL,
+            start=start,
+            finish=Location(x=rand_x, y=rand_y),
+        )
     final_dfs, path_dfs = depth_first_search(m.start, m.finish_line, m.frontier)
     if path_dfs is None:
         while path_dfs is None:
-            m = Maze(factory=FACTORY_HALL)
+            m = Maze(factory=FACTORY_HALL, start=start, finish=finish)
             final_dfs, path_dfs = depth_first_search(m.start, m.finish_line, m.frontier)
     final_bfs, path_bfs = breadth_first_search(m.start, m.finish_line, m.frontier)
     distance = manhattan_distance(m.finish)
@@ -185,8 +201,9 @@ def api_bolt_goto(code: int):
         y = request.args.get("y")
         if digit(x) and digit(y):
             route = get_path(code, int(x), int(y))
+            opt_route = optimize_path(route)
             set_path(code, route)
-            return CORS_resp({"path": route})
+            return CORS_resp({"path": route, "optimized_path": opt_route})
     return CORS_resp(swarm.get_bolt(code))
 
 
@@ -237,8 +254,9 @@ def api_nest_command(code: str):
     y = int(code[1])
     bolt_code = get_bolt(x, y)
     route = get_path(bolt_code, x, y)
+    opt_route = optimize_path(route)
     set_path(bolt_code, route)
-    return {"bolt": bolt_code, "path": route}
+    return {"bolt": bolt_code, "path": route, "optimal_route": opt_route}
 
 
 # endregion
@@ -298,7 +316,7 @@ def get_path(code: int, x: int, y: int):
     distance = manhattan_distance(m.finish)
     final_astar, _ = astar(m.start, m.finish_line, m.frontier, distance)
     final_astar.append(m.finish)
-    return final_astar
+    return [start] + final_astar
 
 
 def set_path(code: int, path: List[Location]):
