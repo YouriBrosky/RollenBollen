@@ -58,6 +58,7 @@ def page_home():
         final_bfs=final_bfs,
         final_dfs=final_dfs,
         final_astar=final_astar,
+        optimal_final_astar=optimize_path(final_astar),
     )
 
 

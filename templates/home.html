@@ -49,6 +49,9 @@
                 <button type="button" class="btn btn-warning" id="finalAstar">
                   A* Search
                 </button>
+                <button type="button" class="btn btn-warning" id="optFinalAstar">
+                  Optimal A* Search
+                </button>
               </div>
             </div>
             <h4 style="margin-top: 15px">Generate a new random maze:</h4>
@@ -77,6 +80,7 @@
               var bfs_path = {{ bfs_path| tojson }}; var astar_path = {{ astar_path| tojson }};
               var final_dfs = {{ final_dfs| tojson }}; var final_bfs = {{ final_bfs| tojson }};
               var final_astar = {{ final_astar| tojson }};
+              var optimal_final_astar = {{ optimal_final_astar| tojson }};
             </script>
             <script src="{{ url_for('static', filename='boardcreation.js') }}"></script>
           </div>
