@@ -212,7 +212,8 @@ def api_bolt_path(code: int):
         x = paths[code]["path"][-1].x
         y = paths[code]["path"][-1].y
         route = get_path(code=code, x=x, y=y)
-        return CORS_resp({"path": route})
+        opt_route = optimize_path(route)
+        return CORS_resp({"path": route, "optimal_route": opt_route})
     return CORS_resp(swarm.get_bolt_by_id(code).next_move)
 
 
