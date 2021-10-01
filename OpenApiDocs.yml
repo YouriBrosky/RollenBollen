@@ -133,6 +133,18 @@ paths:
           required: true
           schema:
             type: integer
+        - name: x
+          in: query
+          required: false
+          description: The x position of the bolt
+          schema:
+            type: integer
+        - name: "y"
+          in: query
+          required: false
+          description: The y position of the bolt
+          schema:
+            type: integer
       responses:
         200:
           description: Succesfull operation
@@ -151,6 +163,18 @@ paths:
           in: path
           description: The ID of the bolt
           required: true
+          schema:
+            type: integer
+        - name: x
+          in: query
+          required: false
+          description: The x position of the bolt
+          schema:
+            type: integer
+        - name: "y"
+          in: query
+          required: false
+          description: The y position of the bolt
           schema:
             type: integer
       responses:
@@ -172,6 +196,18 @@ paths:
           in: path
           description: The ID of the bolt
           required: true
+          schema:
+            type: integer
+        - name: x
+          in: query
+          required: false
+          description: The x position of the bolt
+          schema:
+            type: integer
+        - name: "y"
+          in: query
+          required: false
+          description: The y position of the bolt
           schema:
             type: integer
       responses:
@@ -235,6 +271,25 @@ paths:
       tags:
         - Frontend
       summary: Get maze layout
+      parameters:
+        - name: x
+          in: query
+          required: false
+          description: The x position of the bolt
+          schema:
+            type: integer
+        - name: "y"
+          in: query
+          required: false
+          description: The y position of the bolt
+          schema:
+            type: integer
+        - name: v
+          in: query
+          required: false
+          description: The value of the position
+          schema:
+            type: integer
       responses:
         200:
           description: Succesfull operation
