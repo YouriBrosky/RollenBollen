@@ -418,7 +418,7 @@ class Bolt {
    * @param {int} distance The distance the BOLT has to roll.
    */
   async roll(angle, distance) {
-    await roll(angle, 65 * speedOffset, (2 * distance) / speedOffset);
+    await roll(angle, 45 * speedOffset, (2 * distance) / speedOffset);
     await delay(1);
   }
 }
