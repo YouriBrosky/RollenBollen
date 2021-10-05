@@ -83,8 +83,10 @@ components:
         path:
           type: array
           items:
-            type: object
-            $ref: "#/components/schemas/Position"
+            type: array
+            items:
+              type: object
+              $ref: "#/components/schemas/Position"
 
 paths:
   /register:

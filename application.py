@@ -85,6 +85,19 @@ def reset_webserver():
     swarm = Swarm()
     global paths
     paths = {}
+    global FACTORY_HALL
+    FACTORY_HALL = [
+        [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+        [1, 1, 1, 1, 0, 1, 1, 0, 1, 1],
+        [0, 0, 0, 0, 0, 0, 1, 0, 1, 0],
+        [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+        [1, 1, 0, 1, 0, 0, 1, 0, 1, 0],
+        [0, 1, 0, 1, 1, 1, 1, 1, 1, 1],
+        [0, 0, 0, 1, 1, 1, 1, 1, 1, 1],
+        [0, 1, 0, 1, 1, 1, 1, 1, 1, 1],
+        [0, 1, 0, 1, 1, 1, 1, 1, 1, 1],
+        [0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+    ]
     return "Success!"
 
 
@@ -200,7 +213,7 @@ def api_bolt_goto(code: int):
         x = request.args.get("x")
         y = request.args.get("y")
         if digit(x) and digit(y):
-            route = get_path(code, int(x), int(y))
+            route = get_path(code, int(x), int(y), factory_hall=FACTORY_HALL)
             opt_route = optimize_path(route)
             set_path(code, route)
             return CORS_resp({"path": route, "optimized_path": opt_route})
@@ -228,7 +241,7 @@ def api_bolt_path(code: int):
     if code in paths and len(paths[code]["path"]) > 0:
         x = paths[code]["path"][-1].x
         y = paths[code]["path"][-1].y
-        route = get_path(code=code, x=x, y=y)
+        route = get_path(code=code, x=x, y=y, factory_hall=FACTORY_HALL)
         opt_route = optimize_path(route)
         return CORS_resp({"path": route, "optimal_route": opt_route})
     return CORS_resp(swarm.get_bolt_by_id(code).next_move)
@@ -238,7 +251,7 @@ def api_bolt_path(code: int):
 def api_go_home():
     """Send all bolts to 0, 0 AKA Homebase."""
     for bolt in swarm.bolts:
-        route = get_path(bolt.id, 0, 0)
+        route = get_path(bolt.id, 0, 0, factory_hall=FACTORY_HALL)
         set_path(bolt.id, route)
     return CORS_resp(swarm.get_bolts())
 
@@ -253,7 +266,7 @@ def api_nest_command(code: str):
     x = int(code[0])
     y = int(code[1])
     bolt_code = get_bolt(x, y)
-    route = get_path(bolt_code, x, y)
+    route = get_path(bolt_code, x, y, factory_hall=FACTORY_HALL)
     opt_route = optimize_path(route)
     set_path(bolt_code, route)
     return {"bolt": bolt_code, "path": route, "optimal_route": opt_route}
@@ -293,7 +306,7 @@ def digit(string_value: str):
     return string_value and string_value.isdigit()
 
 
-def get_path(code: int, x: int, y: int):
+def get_path(code: int, x: int, y: int, factory_hall: List[List[int]]):
     """Get a path via A* for the given BOLT and coordinates.
 
     Parameters
@@ -312,7 +325,7 @@ def get_path(code: int, x: int, y: int):
     """
     pos = swarm.get_bolt_by_id(code).position
     start = Location(x=int(pos["x"]), y=int(pos["y"]))
-    m = Maze(factory=FACTORY_HALL, start=start, finish=Location(x=x, y=y))
+    m = Maze(factory=factory_hall, start=start, finish=Location(x=x, y=y))
     distance = manhattan_distance(m.finish)
     final_astar, _ = astar(m.start, m.finish_line, m.frontier, distance)
     final_astar.append(m.finish)
