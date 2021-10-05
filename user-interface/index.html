@@ -2,8 +2,8 @@
 
 <head>
   <title>RollenBollen</title>
-  <!-- <!– Load React. afblijven met de tengels –>
-      <!– Note: when deploying, replace “development.js” with “production.min.js”. –> -->
+  <!-- Load React. afblijven met de tengels 
+  Note: when deploying, replace “development.js” with “production.min.js”. -->
   <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
   <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
@@ -14,7 +14,7 @@
   <div id="root"></div>
 
   <script type="text/babel">
-  // TODO: terugveranderen van donkerblauw naar lichtblauw wanneer bolt pad aflegt
+    // TODO: terugveranderen van donkerblauw naar lichtblauw wanneer bolt pad aflegt
     window.onload = function () {
       function App(props) {
         const apiLink = 'https://rollenbollen.azurewebsites.net/api/'
@@ -24,39 +24,39 @@
         const [bolts, setBolts] = React.useState([]);
 
         React.useEffect(() => {
-          const getMaze= async () => {
+          const getMaze = async () => {
             const response = await fetch(apiLink + 'maze');
             const json = await response.json();
 
             const maze = json.maze // JSON is object with property 'maze'
 
             let array = []
-            for(var i = 0; i < maze.length; i++) {
-              for(var j = 0; j < maze[i].length; j++) {
+            for (var i = 0; i < maze.length; i++) {
+              for (var j = 0; j < maze[i].length; j++) {
                 array.push(
                   {
-                    index: i * 10 + j, 
-                    util: maze[i][j] == 0 ? 
+                    index: i * 10 + j,
+                    util: maze[i][j] == 0 ?
                       ('#C8EFF9') : //available
                       ('#ff0000')   //obstacle
                   }
                 )
               }
-            }  
+            }
             setGrids(array)
           }
-          
-          getMaze()
-        }, []); // remove brackets if you want to loop request the server
 
-        const setMaze= async (x, y) => { // handles toggle of grid by x and y
-          let param = '?x=' + x + '&y=' + y + '&v=' + (cursor == '#C8EFF9'? ('0') : ('1'))
+          getMaze()
+        }); // remove brackets if you want to loop request the server
+
+        const setMaze = async (x, y) => { // handles toggle of grid by x and y
+          let param = '?x=' + x + '&y=' + y + '&v=' + (cursor == '#C8EFF9' ? ('0') : ('1'))
           const response = await fetch(apiLink + 'maze' + param);
           const json = await response.json();
         }
 
         React.useEffect(() => {
-          const getBolts= async () => {
+          const getBolts = async () => {
             const response = await fetch(apiLink + 'bolt');
             const json = await response.json();
             setBolts(await json)
@@ -75,9 +75,9 @@
           <div className="container">
             <div className="side-container">
               <ButtonView setCursor={setCursor} />
-              {bolts != [] ? <BoltView bolts={bolts} onClick={() =>console.log(grids)}/> : null}
+              {bolts != [] ? <BoltView bolts={bolts} onClick={() => console.log(grids)} /> : null}
             </div>
-            {grids != [] ? (<GridView cursor={cursor} grids={grids} setMaze={setMaze} />) : (null)}  
+            {grids != [] ? (<GridView cursor={cursor} grids={grids} setMaze={setMaze} />) : (null)}
           </div>
         );
       }
@@ -117,7 +117,7 @@
         return (
           <div className="bolt-div">{props.bolts.map((element, index) => (
             <div key={element.id}
-              className="bolt" 
+              className="bolt"
               style={{ backgroundColor: "#022449" }}
             >
               <h3>ID: {element.id}, POS: {element.position.x.toString() + element.position.y.toString()}</h3>
@@ -138,14 +138,14 @@
         return (
           <div className="box-map">
             <div className="grid-container">
-                 {props.grids.map((element, index) => (
-                  <Grid
-                    item={element}
-                    key={props.grids[index].index}
-                    changeGrid={() => changeGrid(index)}
-                    cursor={props.cursor}
-                  /> 
-                ))
+              {props.grids.map((element, index) => (
+                <Grid
+                  item={element}
+                  key={props.grids[index].index}
+                  changeGrid={() => changeGrid(index)}
+                  cursor={props.cursor}
+                />
+              ))
               }
             </div>
           </div>
@@ -158,7 +158,7 @@
 
       React.useEffect(() => {
         console.log('render')
-          setColor(props.item.util)
+        setColor(props.item.util)
       }, [props.item.util]) // if color changes, re-render
 
       const onChangeGrid = () => {
@@ -180,7 +180,7 @@
         </div>
       );
     }
-    
+
   </script>
 </body>
 
