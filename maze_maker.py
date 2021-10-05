@@ -46,6 +46,7 @@ class Maze:
         self.start: Location = start
         self.finish: Location = finish
         self.maze: List[List[MazeSymbol]] = [
+            [MazeSymbol.empty for _ in range(columns)] for _ in range(rows)
         ]
         self._fill_maze()
 
