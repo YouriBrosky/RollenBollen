@@ -12,7 +12,7 @@ app: Flask = Flask(__name__, template_folder="templates")
 swarm: Swarm = Swarm()
 paths: Dict[int, Dict[str, Union[int, List[Location]]]] = {}
 
-FACTORY_HALL = [
+factory_layout = [
     [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
     [1, 1, 1, 1, 0, 1, 1, 0, 1, 1],
     [0, 0, 0, 0, 0, 0, 1, 0, 1, 0],
@@ -42,7 +42,7 @@ def page_home():
         finish = Location(y=int(fx), x=int(fy))
     else:
         finish = Location(x=9, y=0)
-    m = Maze(factory=FACTORY_HALL, start=start, finish=finish)
+    m = Maze(factory=factory_layout, start=start, finish=finish)
     if request.method == "POST" and request.form["rand"] == "loc":
         # Section: New random finish
         rand_x = np.random.choice(np.arange(10))
@@ -52,14 +52,14 @@ def page_home():
             else np.random.choice(np.arange(1, 10))
         )
         m = Maze(
-            factory=FACTORY_HALL,
+            factory=factory_layout,
             start=start,
             finish=Location(x=rand_x, y=rand_y),
         )
     final_dfs, path_dfs = depth_first_search(m.start, m.finish_line, m.frontier)
     if path_dfs is None:
         while path_dfs is None:
-            m = Maze(factory=FACTORY_HALL, start=start, finish=finish)
+            m = Maze(factory=factory_layout, start=start, finish=finish)
             final_dfs, path_dfs = depth_first_search(m.start, m.finish_line, m.frontier)
     final_bfs, path_bfs = breadth_first_search(m.start, m.finish_line, m.frontier)
     distance = manhattan_distance(m.finish)
@@ -85,8 +85,8 @@ def reset_webserver():
     swarm = Swarm()
     global paths
     paths = {}
-    global FACTORY_HALL
-    FACTORY_HALL = [
+    global factory_layout
+    factory_layout = [
         [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
         [1, 1, 1, 1, 0, 1, 1, 0, 1, 1],
         [0, 0, 0, 0, 0, 0, 1, 0, 1, 0],
@@ -213,7 +213,7 @@ def api_bolt_goto(code: int):
         x = request.args.get("x")
         y = request.args.get("y")
         if digit(x) and digit(y):
-            route = get_path(code, int(x), int(y), factory_hall=FACTORY_HALL)
+            route = get_path(code, int(x), int(y))
             opt_route = optimize_path(route)
             set_path(code, route)
             return cors_resp({"path": route, "optimized_path": opt_route})
@@ -241,7 +241,7 @@ def api_bolt_path(code: int):
     if code in paths and len(paths[code]["path"]) > 0:
         x = paths[code]["path"][-1].x
         y = paths[code]["path"][-1].y
-        route = get_path(code=code, x=x, y=y, factory_hall=FACTORY_HALL)
+        route = get_path(code=code, x=x, y=y)
         opt_route = optimize_path(route)
         return cors_resp({"path": route, "optimal_route": opt_route})
     return cors_resp(swarm.get_bolt_by_id(code).next_move)
@@ -251,7 +251,7 @@ def api_bolt_path(code: int):
 def api_go_home():
     """Send all bolts to 0, 0 AKA Homebase."""
     for bolt in swarm.bolts:
-        route = get_path(bolt.id, 0, 0, factory_hall=FACTORY_HALL)
+        route = get_path(bolt.id, 0, 0)
         set_path(bolt.id, route)
     return cors_resp(swarm.get_bolts())
 
@@ -266,7 +266,7 @@ def api_nest_command(code: str):
     x = int(code[0])
     y = int(code[1])
     bolt_code = get_bolt(x, y)
-    route = get_path(bolt_code, x, y, factory_hall=FACTORY_HALL)
+    route = get_path(bolt_code, x, y)
     opt_route = optimize_path(route)
     set_path(bolt_code, route)
     return {"bolt": bolt_code, "path": route, "optimal_route": opt_route}
@@ -281,8 +281,8 @@ def api_get_maze():
     y = request.args.get("y")
     value = request.args.get("v")
     if digit(x) and digit(y) and digit(value):
-        FACTORY_HALL[int(y)][int(x)] = int(value)
-    return cors_resp({"maze": FACTORY_HALL})
+        factory_layout[int(y)][int(x)] = int(value)
+    return cors_resp({"maze": factory_layout})
 
 
 # endregion
@@ -306,7 +306,7 @@ def digit(string_value: str):
     return string_value and string_value.isdigit()
 
 
-def get_path(code: int, x: int, y: int, factory_hall: List[List[int]]):
+def get_path(code: int, x: int, y: int):
     """Get a path via A* for the given BOLT and coordinates.
 
     Parameters
@@ -325,7 +325,7 @@ def get_path(code: int, x: int, y: int, factory_hall: List[List[int]]):
     """
     pos = swarm.get_bolt_by_id(code).position
     start = Location(x=int(pos["x"]), y=int(pos["y"]))
-    m = Maze(factory=factory_hall, start=start, finish=Location(x=x, y=y))
+    m = Maze(factory=factory_layout, start=start, finish=Location(x=x, y=y))
     distance = manhattan_distance(m.finish)
     final_astar, _ = astar(m.start, m.finish_line, m.frontier, distance)
     final_astar.append(m.finish)
@@ -423,7 +423,7 @@ def calc_dist(xy_dict: Dict[str, int], x: int, y: int):
         The total length of the path
     """
     start = Location(x=int(xy_dict["x"]), y=int(xy_dict["y"]))
-    m = Maze(factory=FACTORY_HALL, start=start, finish=Location(x=x, y=y))
+    m = Maze(factory=factory_layout, start=start, finish=Location(x=x, y=y))
     distance = manhattan_distance(m.finish)
     final_astar, _ = astar(m.start, m.finish_line, m.frontier, distance)
     return len(final_astar)
