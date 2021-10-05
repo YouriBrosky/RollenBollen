@@ -106,21 +106,21 @@ def reset_webserver():
 @app.route("/api", methods=["GET"])
 def api_index():
     """Root mapping for the api."""
-    return CORS_resp("Welkom bij de API")
+    return cors_resp("Welkom bij de API")
 
 
 @app.route("/api/register", methods=["GET"])
 def api_register():
     """Register a BOLT via the API."""
     bolt = Bolt()
-    return CORS_resp(swarm.register_bolt(bolt=bolt))
+    return cors_resp(swarm.register_bolt(bolt=bolt))
 
 
 # region: Bolt
 @app.route("/api/bolt", methods=["GET"])
 def api_list_bolts():
     """Return a list of all BOLT's."""
-    return CORS_resp(swarm.get_bolts())
+    return cors_resp(swarm.get_bolts())
 
 
 @app.route("/api/bolt/<int:code>", methods=["GET"])
@@ -139,7 +139,7 @@ def api_bolt(code: int):
     """
     return_code = None
     if code:
-        return_code = CORS_resp(swarm.get_bolt(code))
+        return_code = cors_resp(swarm.get_bolt(code))
     return return_code
 
 
@@ -166,7 +166,7 @@ def api_bolt_move_x_y(code: int):
             swarm.get_bolt_by_id(code).set_position(x=int(x))
         elif digit(y):
             swarm.get_bolt_by_id(code).set_position(y=int(y))
-    return CORS_resp(swarm.get_bolt(code))
+    return cors_resp(swarm.get_bolt(code))
 
 
 @app.route("/api/bolt/<int:code>/move", methods=["GET"])
@@ -192,7 +192,7 @@ def api_bolt_set_next_move(code: int):
             swarm.get_bolt_by_id(code).set_next_move(x=int(x))
         elif digit(y):
             swarm.get_bolt_by_id(code).set_next_move(y=int(y))
-    return CORS_resp(swarm.get_bolt(code))
+    return cors_resp(swarm.get_bolt(code))
 
 
 @app.route("/api/bolt/<int:code>/goto", methods=["GET"])
@@ -216,8 +216,8 @@ def api_bolt_goto(code: int):
             route = get_path(code, int(x), int(y), factory_hall=FACTORY_HALL)
             opt_route = optimize_path(route)
             set_path(code, route)
-            return CORS_resp({"path": route, "optimized_path": opt_route})
-    return CORS_resp(swarm.get_bolt(code))
+            return cors_resp({"path": route, "optimized_path": opt_route})
+    return cors_resp(swarm.get_bolt(code))
 
 
 @app.route("/api/bolt/<int:code>/command", methods=["GET"])
@@ -229,10 +229,10 @@ def api_bolt_command(code: int):
         if paths[code]["counter"] == len(paths[code]["path"]):
             del paths[code]
         swarm.get_bolt_by_id(code).set_position(x=loc.x, y=loc.y)
-        return CORS_resp({"x": loc.x, "y": loc.y})
+        return cors_resp({"x": loc.x, "y": loc.y})
     pos = swarm.get_bolt_by_id(code).next_move
     swarm.get_bolt_by_id(code).set_position(x=pos["x"], y=pos["y"])
-    return CORS_resp(pos)
+    return cors_resp(pos)
 
 
 @app.route("/api/bolt/<int:code>/path", methods=["GET"])
@@ -243,8 +243,8 @@ def api_bolt_path(code: int):
         y = paths[code]["path"][-1].y
         route = get_path(code=code, x=x, y=y, factory_hall=FACTORY_HALL)
         opt_route = optimize_path(route)
-        return CORS_resp({"path": route, "optimal_route": opt_route})
-    return CORS_resp(swarm.get_bolt_by_id(code).next_move)
+        return cors_resp({"path": route, "optimal_route": opt_route})
+    return cors_resp(swarm.get_bolt_by_id(code).next_move)
 
 
 @app.route("/api/home")
@@ -253,7 +253,7 @@ def api_go_home():
     for bolt in swarm.bolts:
         route = get_path(bolt.id, 0, 0, factory_hall=FACTORY_HALL)
         set_path(bolt.id, route)
-    return CORS_resp(swarm.get_bolts())
+    return cors_resp(swarm.get_bolts())
 
 
 # endregion
@@ -282,7 +282,7 @@ def api_get_maze():
     value = request.args.get("v")
     if digit(x) and digit(y) and digit(value):
         FACTORY_HALL[int(y)][int(x)] = int(value)
-    return CORS_resp({"maze": FACTORY_HALL})
+    return cors_resp({"maze": FACTORY_HALL})
 
 
 # endregion
@@ -429,7 +429,8 @@ def calc_dist(xy_dict: Dict[str, int], x: int, y: int):
     return len(final_astar)
 
 
-def CORS_resp(data):
+def cors_resp(data: Any):
+    """cors_resp will create responses with CORS access
     response = jsonify(data)
     response.headers.add("Access-Control-Allow-Origin", "*")
     response.headers.add("Access-Control-Allow-Headers", "*")
