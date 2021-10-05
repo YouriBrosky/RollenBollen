@@ -20,6 +20,7 @@
 
         const [cursor, setCursor] = React.useState("#C8EFF9");
         const [grids, setGrids] = React.useState([]);
+        const [bolts, setBolts] = React.useState([]);
 
         React.useEffect(() => {
           const getMaze= async () => {
@@ -43,6 +44,7 @@
             }  
             setGrids(array)
           }
+          
           getMaze()
         }, []); // remove brackets if you want to loop request the server (to get live position bolt)
 
@@ -52,11 +54,28 @@
           const json = await response.json();
         }
 
+        React.useEffect(() => {
+          const getBolts= async () => {
+            const response = await fetch(apiLink + 'bolt');
+            const json = await response.json();
+            setBolts(await json)
+
+            let array = grids
+            json.map((element) => {
+              array[element.position.x * 10 + element.position.y].util = '#022449'
+              setGrids(array)
+              // console.log(array)
+            }) // does this work?
+          }
+          
+          getBolts()
+        }) // keeps refreshing, TODO: add cooldown of 1s
+
         return (
           <div className="container">
             <div className="side-container">
               <ButtonView setCursor={setCursor} />
-              <BoltView onClick={() =>console.log(grids)}/>
+              {bolts != [] ? <BoltView bolts={bolts} onClick={() =>console.log(grids)}/> : null}
             </div>
             {grids != [] ? (<GridView cursor={cursor} grids={grids} setMaze={setMaze} />) : (null)}  
           </div>
@@ -94,30 +113,23 @@
         );
       }
 
-      function BoltView() {
+      function BoltView(props) {
         return (
-          <div className="bolt-div">
-            <div className="bolt" style={{ backgroundColor: "#022449" }}></div>
-            <div className="bolt" style={{ backgroundColor: "#022449" }}></div>
-            <div className="bolt" style={{ backgroundColor: "#022449" }}></div>
-            <div className="bolt" style={{ backgroundColor: "#022449" }}></div>
-            <div className="bolt" style={{ backgroundColor: "#022449" }}></div>
-            <div className="bolt" style={{ backgroundColor: "#022449" }}></div>
-            <div className="bolt" style={{ backgroundColor: "#022449" }}></div>
-            <div className="bolt" style={{ backgroundColor: "#022449" }}></div>
-            <div className="bolt" style={{ backgroundColor: "#022449" }}></div>
+          <div className="bolt-div">{props.bolts.map((element, index) => (
+            <div key={element.id}
+              className="bolt" 
+              style={{ backgroundColor: "#022449" }}
+            >
+              <h3>ID: {element.id}, POS: {element.position.x.toString() + element.position.y.toString()}</h3>
+            </div>
+          ))}
           </div>
         )
       }
 
       function GridView(props) {
-        let grids = [];
-        for (let index = 0; index < 100; index++) {
-          grids.push({ index: index, util: "#C8EFF9" });
-        }
 
         const changeGrid = (item) => {
-          grids[item].util = props.cursor;
           // calculate x and y based on grid position
           // x and y are flipped because api contains an error
           props.setMaze(grids[item].index % 10, Math.floor(grids[item].index / 10))
@@ -143,6 +155,10 @@
 
     function Grid(props) {
       const [color, setColor] = React.useState(props.item.util);
+
+      React.useEffect(() => {
+          setColor(props.item.util)
+      }, [props.item.util]) // if color changes, re-render
 
       const onChangeGrid = () => {
         if (props.cursor != color) {
