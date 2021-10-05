@@ -50,12 +50,11 @@ class Maze:
         self._fill_maze()
 
     def _fill_maze(self):
-        """Should Fill maze with X's as shown in "factory_hall" above."""
-        print(self.factory)
-        if self.rows == len(factory_hall) or self.columns == len(factory_hall[0]):
+        """Should Fill maze with X's as shown in self.factory above."""
+        if self.rows == len(self.factory) or self.columns == len(self.factory):
             for row in range(self.rows):
                 for col in range(self.columns):
-                    if factory_hall[row][col] == 1:
+                    if self.factory[row][col] == 1:
                         self.maze[row][col] = MazeSymbol.wall
         self.maze[self.start.x][self.start.y] = MazeSymbol.start
         self.maze[self.finish.x][self.finish.y] = MazeSymbol.finish
