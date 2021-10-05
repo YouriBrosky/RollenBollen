@@ -14,6 +14,7 @@
   <div id="root"></div>
 
   <script type="text/babel">
+  // TODO: terugveranderen van donkerblauw naar lichtblauw wanneer bolt pad aflegt
     window.onload = function () {
       function App(props) {
         const apiLink = 'https://rollenbollen.azurewebsites.net/api/'
@@ -46,7 +47,7 @@
           }
           
           getMaze()
-        }, []); // remove brackets if you want to loop request the server (to get live position bolt)
+        }, []); // remove brackets if you want to loop request the server
 
         const setMaze= async (x, y) => { // handles toggle of grid by x and y
           let param = '?x=' + x + '&y=' + y + '&v=' + (cursor == '#C8EFF9'? ('0') : ('1'))
@@ -63,11 +64,10 @@
             let array = grids
             json.map((element) => {
               array[element.position.x * 10 + element.position.y].util = '#022449'
-              setGrids(array)
-              // console.log(array)
-            }) // does this work?
+            })
+            setGrids(array)
           }
-          
+
           getBolts()
         }) // keeps refreshing, TODO: add cooldown of 1s
 
@@ -132,7 +132,7 @@
         const changeGrid = (item) => {
           // calculate x and y based on grid position
           // x and y are flipped because api contains an error
-          props.setMaze(grids[item].index % 10, Math.floor(grids[item].index / 10))
+          props.setMaze(props.grids[item].index % 10, Math.floor(props.grids[item].index / 10))
         };
 
         return (
@@ -157,14 +157,15 @@
       const [color, setColor] = React.useState(props.item.util);
 
       React.useEffect(() => {
+        console.log('render')
           setColor(props.item.util)
       }, [props.item.util]) // if color changes, re-render
 
       const onChangeGrid = () => {
         if (props.cursor != color) {
           props.changeGrid();
-          }
         }
+      }
 
       return (
         <div

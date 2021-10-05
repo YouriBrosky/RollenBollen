@@ -63,6 +63,7 @@ h3 {
   background-color: #cfcfcf;
   padding: 10px;
   grid-gap: 10px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .grid-item {
@@ -70,6 +71,7 @@ h3 {
   border: 1px solid rgba(0, 0, 0, 0.8);
   font-size: 30px;
   text-align: center;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 .button-div {
   display: flex;
@@ -92,6 +94,7 @@ h3 {
   width: 225;
   border-radius: 10px;
   user-select: none;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .bolt-div {

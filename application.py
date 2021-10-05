@@ -40,14 +40,18 @@ def page_home():
             else np.random.choice(np.arange(1, 10))
         )
         m = Maze(factory=FACTORY_HALL, finish=Location(x=rand_x, y=rand_y))
-    final_dfs, path_dfs = depth_first_search(m.start, m.finish_line, m.frontier)
+    final_dfs, path_dfs = depth_first_search(
+        m.start, m.finish_line, m.frontier)
     if path_dfs is None:
         while path_dfs is None:
             m = Maze(factory=FACTORY_HALL)
-            final_dfs, path_dfs = depth_first_search(m.start, m.finish_line, m.frontier)
-    final_bfs, path_bfs = breadth_first_search(m.start, m.finish_line, m.frontier)
+            final_dfs, path_dfs = depth_first_search(
+                m.start, m.finish_line, m.frontier)
+    final_bfs, path_bfs = breadth_first_search(
+        m.start, m.finish_line, m.frontier)
     distance = manhattan_distance(m.finish)
-    final_astar, path_astar = astar(m.start, m.finish_line, m.frontier, distance)
+    final_astar, path_astar = astar(
+        m.start, m.finish_line, m.frontier, distance)
 
     return render_template(
         "home.html",
@@ -244,6 +248,7 @@ def api_nest_command(code: str):
 @app.route("/api/maze")
 def api_get_maze():
     """Give the current maze, with options to edit the options."""
+    global FACTORY_HALL
     x = request.args.get("x")
     y = request.args.get("y")
     value = request.args.get("v")
