@@ -1,9 +1,9 @@
 # Verkregen van https://github.com/slevin886/maze_maker op 17/09/2021
 
-from math import sqrt
-from typing import NamedTuple
+from typing import List
 
 from maze_search import astar, depth_first_search
+from util import Location
 
 factory_hall = [
     [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
@@ -16,15 +16,7 @@ factory_hall = [
     [0, 1, 0, 0, 1, 1, 1, 1, 1, 1],
     [0, 1, 0, 1, 1, 1, 1, 1, 1, 1],
     [0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
-
 ]
-
-
-class Location(NamedTuple):
-    """Maze locations in the grid as x, y coordinates"""
-
-    x: int
-    y: int
 
 
 class MazeSymbol:
@@ -47,14 +39,13 @@ class Maze:
         start=Location(0, 0),
         finish=Location(9, 0),
     ):
-        self.factory = factory
-        self.rows = rows
-        self.columns = columns
-        self.barriers = barriers
-        self.start = start
-        self.finish = finish
-        self.maze = [
-            [MazeSymbol.empty for col in range(columns)] for row in range(rows)
+        self.factory: List[List[int]] = factory
+        self.rows: int = rows
+        self.columns: int = columns
+        self.barriers: float = barriers
+        self.start: Location = start
+        self.finish: Location = finish
+        self.maze: List[List[MazeSymbol]] = [
         ]
         self._fill_maze()
 
@@ -69,7 +60,7 @@ class Maze:
         self.maze[self.start.x][self.start.y] = MazeSymbol.start
         self.maze[self.finish.x][self.finish.y] = MazeSymbol.finish
 
-    def frontier(self, curr):
+    def frontier(self, curr: Location):
         """curr is a Location for current location"""
         next_moves = []
         # Move one position up
@@ -89,16 +80,14 @@ class Maze:
             next_moves.append(Location(curr.x + 1, curr.y))
         return next_moves
 
-    def finish_line(self, curr):
-        if curr.x == self.finish.x and curr.y == self.finish.y:
-            return True
-        return False
+    def finish_line(self, curr: Location):
+        return curr.x == self.finish.x and curr.y == self.finish.y
 
-    def draw_path(self, path):
+    def draw_path(self, path: List[Location]):
         for loc in path:
             self.maze[loc.x][loc.y] = MazeSymbol.path
 
-    def clear_path(self, path):
+    def clear_path(self, path: List[Location]):
         for loc in path:
             self.maze[loc.x][loc.y] = MazeSymbol.empty
 
@@ -120,17 +109,8 @@ class Maze:
         return pretty_printed
 
 
-def euclidean_distance(finish_line):
-    def distance(loc):
-        xdistance = loc.column - finish_line.column
-        ydistance = loc.row - finish_line.row
-        return sqrt((xdistance ** 2) + (ydistance ** 2))
-
-    return distance
-
-
-def manhattan_distance(finish):
-    def distance(loc):
+def manhattan_distance(finish: Location):
+    def distance(loc: Location):
         xdistance = abs(loc.y - finish.y)
         ydistance = abs(loc.x - finish.x)
         return xdistance + ydistance
