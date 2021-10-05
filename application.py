@@ -29,6 +29,7 @@ FACTORY_HALL = [
 # region: Pages
 @app.route("/", methods=["GET", "POST"])
 def page_home():
+    """Return the home page of the website."""
     sx = request.args.get("sx")
     sy = request.args.get("sy")
     fx = request.args.get("fx")
@@ -41,7 +42,6 @@ def page_home():
         finish = Location(y=int(fx), x=int(fy))
     else:
         finish = Location(x=9, y=0)
-    """Return the home page of the website."""
     m = Maze(factory=FACTORY_HALL, start=start, finish=finish)
     if request.method == "POST" and request.form["rand"] == "loc":
         # Section: New random finish
