@@ -1,5 +1,5 @@
 """The flask api to run the BOLT Swarm."""
-from typing import Dict, List, Union
+from typing import Any, Dict, List, Union
 
 import numpy as np
 from flask import Flask, jsonify, render_template, request
@@ -431,6 +431,17 @@ def calc_dist(xy_dict: Dict[str, int], x: int, y: int):
 
 def cors_resp(data: Any):
     """cors_resp will create responses with CORS access
+
+    Parameters
+    ----------
+    data : str
+        The data to be send
+
+    Returns
+    -------
+    Response
+        Response able with CORS
+    """
     response = jsonify(data)
     response.headers.add("Access-Control-Allow-Origin", "*")
     response.headers.add("Access-Control-Allow-Headers", "*")
