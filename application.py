@@ -137,10 +137,7 @@ def api_bolt(code: int):
     Bolt
         The info about the bolt
     """
-    return_code = None
-    if code:
-        return_code = cors_resp(swarm.get_bolt(code))
-    return return_code
+    return cors_resp(swarm.get_bolt(code)) if code else None
 
 
 @app.route("/api/bolt/<int:code>/moved", methods=["GET"])
@@ -259,7 +256,7 @@ def api_go_home():
 # endregion
 # region: Nest
 @app.route("/api/nest/<code>")
-def api_nest_command(code: str):
+def api_nest_command(code: str, swarm: Swarm = swarm):
     """Api-point for the Google Nest."""
     if len(code) == 1:
         code = "0" + code
@@ -269,7 +266,7 @@ def api_nest_command(code: str):
     route = get_path(bolt_code, x, y)
     opt_route = optimize_path(route)
     set_path(bolt_code, route)
-    return {"bolt": bolt_code, "path": route, "optimal_route": opt_route}
+    return cors_resp({"bolt": bolt_code, "path": route, "optimal_route": opt_route})
 
 
 # endregion
@@ -306,7 +303,7 @@ def digit(string_value: str):
     return string_value and string_value.isdigit()
 
 
-def get_path(code: int, x: int, y: int):
+def get_path(code: int, x: int, y: int, swarm: Swarm = swarm, layout=factory_layout):
     """Get a path via A* for the given BOLT and coordinates.
 
     Parameters
@@ -403,19 +400,19 @@ def get_bolt(x: int, y: int, swarm: Swarm = swarm):
     min_dist = 100
     bolt_id = -1
     for bolt in swarm.bolts:
-        curr_dist = calc_dist(bolt.position, x, y)
+        curr_dist = calc_dist(start_pos=bolt.position, x=x, y=y)
         if not bolt.is_busy() and curr_dist < min_dist and curr_dist > 0:
             bolt_id = bolt.id
             min_dist = curr_dist
     return bolt_id
 
 
-def calc_dist(xy_dict: Dict[str, int], x: int, y: int):
+def calc_dist(start_pos: Dict[str, int], x: int, y: int):
     """Calc the length of a path from the Bolt to <x> and <y>.
 
     Parameters
     ----------
-    xy_dict : Dict[str, int]
+    start_pos : Dict[str, int]
         The x and y position of the BOLT
     x : int
         The end.x position
@@ -427,7 +424,7 @@ def calc_dist(xy_dict: Dict[str, int], x: int, y: int):
     int
         The total length of the path
     """
-    start = Location(x=int(xy_dict["x"]), y=int(xy_dict["y"]))
+    start = Location(x=int(start_pos["x"]), y=int(start_pos["y"]))
     m = Maze(factory=factory_layout, start=start, finish=Location(x=x, y=y))
     distance = manhattan_distance(m.finish)
     final_astar, _ = astar(m.start, m.finish_line, m.frontier, distance)
