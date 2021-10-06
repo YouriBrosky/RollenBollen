@@ -324,8 +324,13 @@ def get_path(code: int, x: int, y: int):
         The final route from the current postition to the end position
     """
     pos = swarm.get_bolt_by_id(code).position
-    start = Location(x=int(pos["x"]), y=int(pos["y"]))
-    m = Maze(factory=factory_layout, start=start, finish=Location(x=x, y=y))
+    return find_path(pos["x"], pos["y"], x, y, layout=layout)
+
+
+def find_path(x1, y1, x2, y2, layout=factory_layout):
+    start = Location(x=x1, y=y1)
+    finish = Location(x=x2, y=y2)
+    m = Maze(factory=layout, start=start, finish=finish)
     distance = manhattan_distance(m.finish)
     final_astar, _ = astar(m.start, m.finish_line, m.frontier, distance)
     final_astar.append(m.finish)
