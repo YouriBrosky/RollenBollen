@@ -33,20 +33,19 @@ class Maze:
     def __init__(
         self,
         factory=factory_hall,
-        rows=10,
-        columns=10,
         barriers=0.4,
         start=Location(0, 0),
         finish=Location(9, 0),
     ):
         self.factory: List[List[int]] = factory
-        self.rows: int = rows
-        self.columns: int = columns
+
+        self.rows: int = len(factory)
+        self.columns: int = len(factory[0])
         self.barriers: float = barriers
         self.start: Location = start
         self.finish: Location = finish
         self.maze: List[List[MazeSymbol]] = [
-            [MazeSymbol.empty for _ in range(columns)] for _ in range(rows)
+            [MazeSymbol.empty for _ in range(self.columns)] for _ in range(self.rows)
         ]
         self._fill_maze()
 
