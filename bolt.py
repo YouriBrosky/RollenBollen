@@ -7,8 +7,8 @@ class Bolt:
 
     def __init__(self) -> None:
         """BOLT, class constructor."""
-        self.position: Dict[str, float] = {"x": 0.0, "y": 0.0}
-        self.next_move: Dict[str, float] = {"x": 0.0, "y": 0.0}
+        self.position: Dict[str, int] = {"x": 0, "y": 0}
+        self.next_move: Dict[str, int] = {"x": 0, "y": 0}
         self.id: int = -1
 
     def register(self, code: int):
