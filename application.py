@@ -332,7 +332,7 @@ def get_path(code: int, x: int, y: int):
     return [start] + final_astar
 
 
-def set_path(code: int, path: List[Location]):
+def set_path(code: int, path: List[Location], swarm: Swarm = swarm):
     """Set the Path of Bolt[<code>].
 
     Parameters
@@ -380,7 +380,7 @@ def optimize_path(path: List[Location]):
     return optimized_path
 
 
-def get_bolt(x: int, y: int):
+def get_bolt(x: int, y: int, swarm: Swarm = swarm):
     """Get the id of the nearest Bolt to position x, y.
 
     Parameters
