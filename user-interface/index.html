@@ -2,8 +2,8 @@
 
 <head>
   <title>RollenBollen</title>
-  <!-- <!– Load React. afblijven met de tengels –>
-      <!– Note: when deploying, replace “development.js” with “production.min.js”. –> -->
+  <!-- Load React. afblijven met de tengels 
+  Note: when deploying, replace “development.js” with “production.min.js”. -->
   <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
   <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
@@ -14,11 +14,12 @@
   <div id="root"></div>
 
   <script type="text/babel">
-  // TODO: terugveranderen van geel naar lichtblauw wanneer bolt pad aflegt
-// TODO: FR12; af te leggen pad weergeven COULD
-// TODO: FR13; server reset knop 
-// TODO: FR14; aansturen per bolt en aansturen dichtsbijzijnde (tov doel) COULD
-// TODO: FR15; alle bolts naar 'home' sturen knop
+    // TODO: terugveranderen van geel naar lichtblauw wanneer bolt pad aflegt
+    // TODO: FR12; af te leggen pad weergeven COULD
+    // TODO: FR13; server reset knop 
+    // TODO: FR14; aansturen per bolt en aansturen dichtsbijzijnde (tov doel) COULD
+    // TODO: FR15; alle bolts naar 'home' sturen knop
+    // TODO: terugveranderen van donkerblauw naar lichtblauw wanneer bolt pad aflegt
     window.onload = function () {
       function App(props) {
         const apiLink = 'https://rollenbollen.azurewebsites.net/api/'
@@ -28,33 +29,33 @@
         const [bolts, setBolts] = React.useState([]);
 
         React.useEffect(() => {
-          const getMaze= async () => {
+          const getMaze = async () => {
             const response = await fetch(apiLink + 'maze');
             const json = await response.json();
 
             const maze = json.maze // JSON is object with property 'maze'
 
             let array = []
-            for(var i = 0; i < maze.length; i++) {
-              for(var j = 0; j < maze[i].length; j++) {
+            for (var i = 0; i < maze.length; i++) {
+              for (var j = 0; j < maze[i].length; j++) {
                 array.push(
                   {
-                    index: i * 10 + j, 
-                    util: maze[i][j] == 0 ? 
+                    index: i * 10 + j,
+                    util: maze[i][j] == 0 ?
                       ('#C8EFF9') : //available
                       ('#e71d07')   //obstacle
                   }
                 )
               }
-            }  
+            }
             setGrids(array)
           }
-          
-          getMaze()
-        }, []); // remove brackets if you want to loop request the server
 
-        const setMaze= async (x, y) => { // handles toggle of grid by x and y
-          let param = '?x=' + x + '&y=' + y + '&v=' + (cursor == '#C8EFF9'? ('0') : ('1'))
+          getMaze()
+        }); // remove brackets if you want to loop request the server
+
+        const setMaze = async (x, y) => { // handles toggle of grid by x and y
+          let param = '?x=' + x + '&y=' + y + '&v=' + (cursor == '#C8EFF9' ? ('0') : ('1'))
           const response = await fetch(apiLink + 'maze' + param);
           const json = await response.json();
         }
@@ -72,7 +73,6 @@
             const json = await response.json();
             console.log(json)
           }
-
           const getBolts = async () => {
             const response = await fetch(apiLink + 'bolt');
             const json = await response.json();
@@ -197,7 +197,8 @@
       function BoltView(props) {
         return (
           <div className="bolt-div">{props.bolts.map((element, index) => (
-            <div key={element.id}
+            <div 
+              key={element.id}
               className="bolt" 
               style={{ backgroundColor: "#009ddb" }}
             >
@@ -261,7 +262,7 @@
         </div>
       );
     }
-    
+
   </script>
 </body>
 
