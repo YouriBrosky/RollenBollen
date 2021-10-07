@@ -14,7 +14,11 @@
   <div id="root"></div>
 
   <script type="text/babel">
-  // TODO: terugveranderen van donkerblauw naar lichtblauw wanneer bolt pad aflegt
+  // TODO: terugveranderen van geel naar lichtblauw wanneer bolt pad aflegt
+// TODO: FR12; af te leggen pad weergeven COULD
+// TODO: FR13; server reset knop 
+// TODO: FR14; aansturen per bolt en aansturen dichtsbijzijnde (tov doel) COULD
+// TODO: FR15; alle bolts naar 'home' sturen knop
     window.onload = function () {
       function App(props) {
         const apiLink = 'https://rollenbollen.azurewebsites.net/api/'
@@ -38,7 +42,7 @@
                     index: i * 10 + j, 
                     util: maze[i][j] == 0 ? 
                       ('#C8EFF9') : //available
-                      ('#ff0000')   //obstacle
+                      ('#e71d07')   //obstacle
                   }
                 )
               }
@@ -56,29 +60,88 @@
         }
 
         React.useEffect(() => {
-          const getBolts= async () => {
+          const getMaze = async () => {
+            const response = await fetch(apiLink + 'maze');
+            const json = await response.json();
+
+            const maze = json.maze // JSON is object with property 'maze'
+          }
+
+          const getPath = async (id) => {
+            const response = await fetch(apiLink + 'bolt/' + id + '/path');
+            const json = await response.json();
+            console.log(json)
+          }
+
+          const getBolts = async () => {
             const response = await fetch(apiLink + 'bolt');
             const json = await response.json();
             setBolts(await json)
+            // console.log(bolts)
 
             let array = grids
-            json.map((element) => {
-              array[element.position.x * 10 + element.position.y].util = '#022449'
-            })
-            setGrids(array)
+            if (bolts.length > 0) {
+              json.map((element) => {
+                // current position
+                array[element.position.x * 10 + element.position.y].util = '#fcd200'
+
+                // console.log(element)
+                
+                // when goal is reached
+                if (element.next_move.x * 10 + element.next_move.y == element.position.x * 10 + element.position.y) {
+                  array[element.position.x * 10 + element.position.y].util = '#009ddb' //overrides
+                  
+                  // TODO: remove all passed grids here
+                } else { // goal hasn't been reached
+                  if (array[element.next_move.x * 10 + element.next_move.y].util != '#42b132') {
+                    array[element.next_move.x * 10 + element.next_move.y].util = '#42b132'
+                  }
+
+                  getPath(element.id) // dit gebruiken
+
+                  
+                } 
+                // console.log('id: ', element.id, array[element.position.x * 10 + element.position.y].util)
+              })
+              setGrids(array)
+            }
           }
 
-          getBolts()
-        }) // keeps refreshing, TODO: add cooldown of 1s
+          const onTheMove = () => {
+
+          }
+
+          if (grids != []) {
+            getBolts()
+          }
+        }) // TODO: needs to keep refreshing, should work (json.map function is een onderkruipsel)
+
+
+        // React.useEffect(() => {
+        //   console.log('bolt changed')
+        // }, [bolts]) // when bolts changes, do this
+
 
         return (
-          <div className="container">
-            <div className="side-container">
-              <ButtonView setCursor={setCursor} />
-              {bolts != [] ? <BoltView bolts={bolts} onClick={() =>console.log(grids)}/> : null}
+          <div className="app-container">
+            <audio controls>
+                <source src="https://vgmsite.com/soundtracks/super-mario-64-soundtrack/zqtpbfkskm/06%20Slider.mp3" type="audio/mpeg"/>
+            </audio>
+            <div className="container">
+              <div className="side-container">
+                <ButtonView setCursor={setCursor} />
+                
+              </div>
+              {grids != [] ? (<GridView cursor={cursor} grids={grids} setMaze={setMaze} />) : (null)}  
+
+                {bolts != [] ? <BoltView bolts={bolts} onClick={() =>console.log(grids)}/> : null}
+              
             </div>
-            {grids != [] ? (<GridView cursor={cursor} grids={grids} setMaze={setMaze} />) : (null)}  
+            <div className="title-view">
+              <img src="https://fontmeme.com/permalink/211007/ee6670dba76f4367bd3d070b9a3cb143.png" alt="super-mario-lettertype" />
+            </div>
           </div>
+          
         );
       }
       ReactDOM.render(<App />, document.getElementById("root"));
@@ -95,19 +158,37 @@
             </div>
             <div
               className="button"
-              style={{ backgroundColor: "#ff0000" }}
-              onClick={() => props.setCursor("#ff0000")}
+              style={{ backgroundColor: "#e71d07" }}
+              onClick={() => props.setCursor("#e71d07")}
             >
               <h2>Obstakel</h2>
             </div>
-            <div className="button" style={{ backgroundColor: "#ffca2c" }}>
+            <div className="button" style={{ backgroundColor: "#fcd200" }}>
               <h2>Tussenstop</h2>
             </div>
-            <div className="button" style={{ backgroundColor: "#022449" }}>
+            <div className="button" style={{ backgroundColor: "#009ddb" }}>
               <h2>Positie</h2>
             </div>
-            <div className="button" style={{ backgroundColor: "#62C7A5" }}>
+            <div className="button" style={{ backgroundColor: "#42b132" }}>
               <h2>Doel</h2>
+            </div>
+            <div 
+              className="button" 
+              style={{ backgroundColor: "#fc9803" }}
+              onClick={() => {
+                fetch('https://rollenbollen.azurewebsites.net/api/' + 'reset') // works, but logs error
+              }}
+            >
+              <h2>Reset BOLTs</h2>
+            </div>
+            <div 
+              className="button" 
+              style={{ backgroundColor: "#b103fc" }}
+              onClick={() => {
+                fetch('https://rollenbollen.azurewebsites.net/api/' + 'home') // sends all connected BOLTs home
+              }}
+            >
+              <h2>Thuisfront</h2>
             </div>
           </div>
         );
@@ -118,7 +199,7 @@
           <div className="bolt-div">{props.bolts.map((element, index) => (
             <div key={element.id}
               className="bolt" 
-              style={{ backgroundColor: "#022449" }}
+              style={{ backgroundColor: "#009ddb" }}
             >
               <h3>ID: {element.id}, POS: {element.position.x.toString() + element.position.y.toString()}</h3>
             </div>
@@ -138,15 +219,14 @@
         return (
           <div className="box-map">
             <div className="grid-container">
-                 {props.grids.map((element, index) => (
-                  <Grid
-                    item={element}
-                    key={props.grids[index].index}
-                    changeGrid={() => changeGrid(index)}
-                    cursor={props.cursor}
-                  /> 
-                ))
-              }
+              {props.grids.map((element, index) => (
+                <Grid
+                  item={element}
+                  key={props.grids[index].index}
+                  changeGrid={() => changeGrid(index)}
+                  cursor={props.cursor}
+                /> 
+              ))}
             </div>
           </div>
         );
@@ -157,11 +237,12 @@
       const [color, setColor] = React.useState(props.item.util);
 
       React.useEffect(() => {
-        console.log('render')
-          setColor(props.item.util)
+        console.log('render grid')
+        setColor(props.item.util)
       }, [props.item.util]) // if color changes, re-render
 
-      const onChangeGrid = () => {
+
+      const onChangeGrid = () => { 
         if (props.cursor != color) {
           props.changeGrid();
         }
