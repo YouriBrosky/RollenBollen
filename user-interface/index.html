@@ -33,7 +33,7 @@
             const json = await response.json();
 
             const maze = json.maze // JSON is object with property 'maze'
-
+            console.log(maze)
             let array = []
             for(var i = 0; i < maze.length; i++) {
               for(var j = 0; j < maze[i].length; j++) {
@@ -67,10 +67,10 @@
             const maze = json.maze // JSON is object with property 'maze'
           }
 
-          const getPath = async (id) => {
+          const getPath = async (id) => { //
             const response = await fetch(apiLink + 'bolt/' + id + '/path');
             const json = await response.json();
-            console.log(json)
+            console.log(await json)
           }
 
           const getBolts = async () => {
@@ -97,7 +97,11 @@
                     array[element.next_move.x * 10 + element.next_move.y].util = '#42b132'
                   }
 
-                  getPath(element.id) // dit gebruiken
+                  () => {
+                    console.log(getPath(element.id))
+                  }
+                  let path = getPath(element.id) // dit gebruiken
+                  // console.log(path)
 
                   
                 } 
@@ -105,10 +109,6 @@
               })
               setGrids(array)
             }
-          }
-
-          const onTheMove = () => {
-
           }
 
           if (grids != []) {
@@ -130,11 +130,10 @@
             <div className="container">
               <div className="side-container">
                 <ButtonView setCursor={setCursor} />
-                
               </div>
               {grids != [] ? (<GridView cursor={cursor} grids={grids} setMaze={setMaze} />) : (null)}  
 
-                {bolts != [] ? <BoltView bolts={bolts} onClick={() =>console.log(grids)}/> : null}
+              {bolts != [] ? <BoltView bolts={bolts} onClick={() =>console.log(grids)}/> : null}
               
             </div>
             <div className="title-view">
