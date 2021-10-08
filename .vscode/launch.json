@@ -31,7 +31,7 @@
             "request": "launch",
             "module": "flask",
             "env": {
-                "FLASK_APP": "application.py",
+                "FLASK_APP": "RollenBollen.application",
                 "FLASK_ENV": "development"
             },
             "args": [
