@@ -27,13 +27,12 @@
         const [grids, setGrids] = React.useState([]);
         const [bolts, setBolts] = React.useState([]);
 
-        React.useEffect(() => {
-          const getMaze= async () => {
+        const getMaze= async () => {
             const response = await fetch(apiLink + 'maze');
             const json = await response.json();
 
             const maze = json.maze // JSON is object with property 'maze'
-            console.log(maze)
+
             let array = []
             for(var i = 0; i < maze.length; i++) {
               for(var j = 0; j < maze[i].length; j++) {
@@ -49,7 +48,8 @@
             }  
             setGrids(array)
           }
-          
+
+        React.useEffect(() => {
           getMaze()
         }, []); // remove brackets if you want to loop request the server
 
@@ -60,50 +60,59 @@
         }
 
         React.useEffect(() => {
-          const getMaze = async () => {
-            const response = await fetch(apiLink + 'maze');
-            const json = await response.json();
-
-            const maze = json.maze // JSON is object with property 'maze'
-          }
-
-          const getPath = async (id) => { //
-            const response = await fetch(apiLink + 'bolt/' + id + '/path');
-            const json = await response.json();
-            console.log(await json)
-          }
+          // const getPath = async (id) => { 
+          //   const response = await fetch(apiLink + 'bolt/' + id + '/path');
+          //   const json = await response.json();
+          //   return await json
+          // }
 
           const getBolts = async () => {
+            console.log('begin')
             const response = await fetch(apiLink + 'bolt');
             const json = await response.json();
             setBolts(await json)
-            // console.log(bolts)
 
             let array = grids
             if (bolts.length > 0) {
-              json.map((element) => {
+              bolts.map((element) => {
                 // current position
-                array[element.position.x * 10 + element.position.y].util = '#fcd200'
-
-                // console.log(element)
+                // array[element.position.x * 10 + element.position.y].util = '#fcd200'
                 
                 // when goal is reached
                 if (element.next_move.x * 10 + element.next_move.y == element.position.x * 10 + element.position.y) {
+                  // if (element.position.x * 10 + element.position.y == '##42b132') {
+                  //   console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+                  //   getMaze()
+                  // }
+                  
                   array[element.position.x * 10 + element.position.y].util = '#009ddb' //overrides
+
+                  
+                  
+
                   
                   // TODO: remove all passed grids here
                 } else { // goal hasn't been reached
                   if (array[element.next_move.x * 10 + element.next_move.y].util != '#42b132') {
                     array[element.next_move.x * 10 + element.next_move.y].util = '#42b132'
                   }
-
-                  () => {
-                    console.log(getPath(element.id))
-                  }
-                  let path = getPath(element.id) // dit gebruiken
-                  // console.log(path)
-
                   
+                  (async () => {
+                    const response = await fetch(apiLink + 'bolt/' + element.id + '/path');
+                    const json = await response.json();
+                    console.log(await json)
+                    if (json.hasOwnProperty('path')) {
+                      console.log('path')
+                      json.path.map((element) => { 
+                        if (array[element[0] * 10 + element[1]].util != '#fcd200') {
+                          array[element[0] * 10 + element[1]].util = '#fcd200'
+                        }
+                    })
+                    } 
+                  })()
+                  
+
+                  console.log('end')
                 } 
                 // console.log('id: ', element.id, array[element.position.x * 10 + element.position.y].util)
               })
@@ -116,11 +125,9 @@
           }
         }) // TODO: needs to keep refreshing, should work (json.map function is een onderkruipsel)
 
-
         // React.useEffect(() => {
         //   console.log('bolt changed')
         // }, [bolts]) // when bolts changes, do this
-
 
         return (
           <div className="app-container">
@@ -140,7 +147,6 @@
               <img src="https://fontmeme.com/permalink/211007/ee6670dba76f4367bd3d070b9a3cb143.png" alt="super-mario-lettertype" />
             </div>
           </div>
-          
         );
       }
       ReactDOM.render(<App />, document.getElementById("root"));
