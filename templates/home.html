@@ -69,30 +69,22 @@
                 </button>
               </div>
             </div>
-            <h1>Generate a new random maze:</h1>
+            <h1>Functions:</h1>
             <div class="row">
               <div class="col flexxer">
                 <form action="{{ url_for('page_home') }}" method="post">
-                  <button type="submit" class="btn btn-success" name="rand">
-                    Randomize Walls
-                  </button>
                   <button type="submit" class="btn btn-info" name="rand" value="loc">
                     Randomize Finish Location
                   </button>
+                  <button class="btn btn-warning"
+                    onclick="const b = async ()=>{await fetch('{{ url_for('api_go_home') }}')};b()">
+                    Home
+                  </button>
+                  <button class="btn btn-danger"
+                    onclick="const a = async ()=>{await fetch('{{ url_for('reset_webserver') }}')};a()">
+                    Reset
+                  </button>
                 </form>
-              </div>
-            </div>
-            <h1>Server settings</h1>
-            <div class="row">
-              <div class="col flexxer">
-                <button class="btn btn-warning"
-                  onclick="const b = async ()=>{await fetch('{{ url_for('api_go_home') }}')};b()">
-                  Home
-                </button>
-                <button class="btn btn-danger"
-                  onclick="const a = async ()=>{await fetch('{{ url_for('reset_webserver') }}')};a()">
-                  Reset
-                </button>
               </div>
             </div>
           </div>
