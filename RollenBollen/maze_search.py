@@ -2,6 +2,9 @@
 
 from collections import deque
 from heapq import heappop, heappush
+from typing import Callable, List
+
+from RollenBollen.util import Location
 
 
 class Stack:
@@ -78,12 +81,12 @@ class Move:
         return (self.cost + self.heuristic) < (other.cost + other.heuristic)
 
 
-def get_path(searchAlgorithm, locations):
+def get_path(search_algorithm, locations):
     path = []
     while locations.previous is not None:
         locations = locations.previous
         path.append(locations.current)
-    print("{} - Path: {}".format(searchAlgorithm, path[::-1]))
+    # print("{} - Path: {}".format(searchAlgorithm, path[::-1]))
     return path[::-1]
 
 
@@ -139,7 +142,12 @@ def breadth_first_search(start, finish_line, next_moves):
     return None, None
 
 
-def astar(start, finish_line, next_moves, heuristic):
+def astar(
+    start: Location,
+    finish_line: Callable[[Location], bool],
+    next_moves: Callable[[Location], List[Location]],
+    heuristic: Callable[[Location], int],
+):
     frontier = PriorityQueue()
     frontier.push(Move(start, None, 0.0, heuristic(start)))
     searched = {start: 0.0}

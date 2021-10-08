@@ -1,7 +1,7 @@
 // 6 array variables representing search paths have been passed to a separate script by the python backend
 // including: final_bfs, bfs_path, final_astar... etc.
 
-var b = jsboard.board({ attach: "game", size: "10x10"});
+var b = jsboard.board({ attach: "game", size: "10x10" });
 
 const commonStyles = { textAlign: "center", width: "40px", height: "40px", borderRadius: "5px" };
 
@@ -19,14 +19,14 @@ const rowLookup = {
   '*': path
 };
 
-function drawMaze(){
-    maze_map.forEach(function(row, xAxis){
-        row.forEach(function(value, yAxis){
-            const symbol = rowLookup[value] || empty;
-            b.cell([xAxis, yAxis]).place(symbol.clone());
-            });
-        });
-    };
+function drawMaze() {
+  maze_map.forEach(function (row, xAxis) {
+    row.forEach(function (value, yAxis) {
+      const symbol = rowLookup[value] || empty;
+      b.cell([xAxis, yAxis]).place(symbol.clone());
+    });
+  });
+};
 
 
 drawMaze();
@@ -45,7 +45,7 @@ const draw = pathProp => {
   pathProp.forEach((coord, index) => {
     setTimeout(() => {
       b.cell([coord[0], coord[1]]).place(path.clone());
-      }, 150 * (index + 1));
+    }, 150 * (index + 1));
   });
 };
 
@@ -58,3 +58,4 @@ document.getElementById("drawPathAstar").addEventListener("click", () => draw(as
 document.getElementById("finalBFS").addEventListener("click", () => draw(final_bfs));
 document.getElementById("finalDFS").addEventListener("click", () => draw(final_dfs));
 document.getElementById("finalAstar").addEventListener("click", () => draw(final_astar));
+document.getElementById("optFinalAstar").addEventListener("click", () => draw(optimal_final_astar));

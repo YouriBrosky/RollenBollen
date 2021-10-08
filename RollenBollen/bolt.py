@@ -7,8 +7,8 @@ class Bolt:
 
     def __init__(self) -> None:
         """BOLT, class constructor."""
-        self.position: Dict[str, float] = {"x": 0.0, "y": 0.0}
-        self.next_move: Dict[str, float] = {"x": 0.0, "y": 0.0}
+        self.position: Dict[str, int] = {"x": 0, "y": 0}
+        self.next_move: Dict[str, int] = {"x": 0, "y": 0}
         self.id: int = -1
 
     def register(self, code: int):
@@ -66,4 +66,4 @@ class Swarm:
         """Get the details of a single BOLT."""
         if code <= len(self.bolts):
             return self.bolts[code - 1]
-        return None
+        raise Exception(f"Unkown bolt<{code}>, only got bolts [{self.bolts}]")

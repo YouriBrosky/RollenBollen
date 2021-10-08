@@ -1,18 +1,18 @@
 """The flask api to run the BOLT Swarm."""
-from typing import Dict, List, Union
+from typing import Any, Dict, List, Union
 
 import numpy as np
 from flask import Flask, jsonify, render_template, request
 
-from bolt import Bolt, Swarm
-from maze_maker import Location, Maze, manhattan_distance
-from maze_search import astar, breadth_first_search, depth_first_search
+from RollenBollen.bolt import Bolt, Swarm
+from RollenBollen.maze_maker import Location, Maze, manhattan_distance
+from RollenBollen.maze_search import astar, breadth_first_search, depth_first_search
 
 app: Flask = Flask(__name__, template_folder="templates")
 swarm: Swarm = Swarm()
 paths: Dict[int, Dict[str, Union[int, List[Location]]]] = {}
 
-FACTORY_HALL = [
+factory_layout = [
     [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
     [1, 1, 1, 1, 0, 1, 1, 0, 1, 1],
     [0, 0, 0, 0, 0, 0, 1, 0, 1, 0],
@@ -30,7 +30,19 @@ FACTORY_HALL = [
 @app.route("/", methods=["GET", "POST"])
 def page_home():
     """Return the home page of the website."""
-    m = Maze(factory=FACTORY_HALL)
+    sx = request.args.get("sx")
+    sy = request.args.get("sy")
+    fx = request.args.get("fx")
+    fy = request.args.get("fy")
+    if digit(sx) and digit(sy):
+        start = Location(y=int(sx), x=int(sy))
+    else:
+        start = Location(x=0, y=0)
+    if digit(fx) and digit(fy):
+        finish = Location(y=int(fx), x=int(fy))
+    else:
+        finish = Location(x=9, y=0)
+    m = Maze(factory=factory_layout, start=start, finish=finish)
     if request.method == "POST" and request.form["rand"] == "loc":
         # Section: New random finish
         rand_x = np.random.choice(np.arange(10))
@@ -39,19 +51,19 @@ def page_home():
             if rand_x != 0
             else np.random.choice(np.arange(1, 10))
         )
-        m = Maze(factory=FACTORY_HALL, finish=Location(x=rand_x, y=rand_y))
-    final_dfs, path_dfs = depth_first_search(
-        m.start, m.finish_line, m.frontier)
+        m = Maze(
+            factory=factory_layout,
+            start=start,
+            finish=Location(x=rand_x, y=rand_y),
+        )
+    final_dfs, path_dfs = depth_first_search(m.start, m.finish_line, m.frontier)
     if path_dfs is None:
         while path_dfs is None:
-            m = Maze(factory=FACTORY_HALL)
-            final_dfs, path_dfs = depth_first_search(
-                m.start, m.finish_line, m.frontier)
-    final_bfs, path_bfs = breadth_first_search(
-        m.start, m.finish_line, m.frontier)
+            m = Maze(factory=factory_layout, start=start, finish=finish)
+            final_dfs, path_dfs = depth_first_search(m.start, m.finish_line, m.frontier)
+    final_bfs, path_bfs = breadth_first_search(m.start, m.finish_line, m.frontier)
     distance = manhattan_distance(m.finish)
-    final_astar, path_astar = astar(
-        m.start, m.finish_line, m.frontier, distance)
+    final_astar, path_astar = astar(m.start, m.finish_line, m.frontier, distance)
 
     return render_template(
         "home.html",
@@ -62,16 +74,30 @@ def page_home():
         final_bfs=final_bfs,
         final_dfs=final_dfs,
         final_astar=final_astar,
+        optimal_final_astar=optimize_path(final_astar),
     )
 
 
-@app.route("/reset", methods=["GET"])
+@app.route("/api/reset", methods=["GET"])
 def reset_webserver():
     """Reset the server."""
     global swarm
     swarm = Swarm()
     global paths
     paths = {}
+    global factory_layout
+    factory_layout = [
+        [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+        [1, 1, 1, 1, 0, 1, 1, 0, 1, 1],
+        [0, 0, 0, 0, 0, 0, 1, 0, 1, 0],
+        [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+        [1, 1, 0, 1, 0, 0, 1, 0, 1, 0],
+        [0, 1, 0, 1, 1, 1, 1, 1, 1, 1],
+        [0, 0, 0, 1, 1, 1, 1, 1, 1, 1],
+        [0, 1, 0, 1, 1, 1, 1, 1, 1, 1],
+        [0, 1, 0, 1, 1, 1, 1, 1, 1, 1],
+        [0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+    ]
     return "Success!"
 
 
@@ -80,21 +106,21 @@ def reset_webserver():
 @app.route("/api", methods=["GET"])
 def api_index():
     """Root mapping for the api."""
-    return "Welkom bij de API"
+    return cors_resp("Welkom bij de API")
 
 
 @app.route("/api/register", methods=["GET"])
 def api_register():
     """Register a BOLT via the API."""
     bolt = Bolt()
-    return jsonify(swarm.register_bolt(bolt=bolt))
+    return cors_resp(swarm.register_bolt(bolt=bolt))
 
 
 # region: Bolt
 @app.route("/api/bolt", methods=["GET"])
 def api_list_bolts():
     """Return a list of all BOLT's."""
-    return jsonify(swarm.get_bolts())
+    return cors_resp(swarm.get_bolts())
 
 
 @app.route("/api/bolt/<int:code>", methods=["GET"])
@@ -111,10 +137,7 @@ def api_bolt(code: int):
     Bolt
         The info about the bolt
     """
-    return_code = None
-    if code:
-        return_code = jsonify(swarm.get_bolt(code))
-    return return_code
+    return cors_resp(swarm.get_bolt(code)) if code else None
 
 
 @app.route("/api/bolt/<int:code>/moved", methods=["GET"])
@@ -140,7 +163,7 @@ def api_bolt_move_x_y(code: int):
             swarm.get_bolt_by_id(code).set_position(x=int(x))
         elif digit(y):
             swarm.get_bolt_by_id(code).set_position(y=int(y))
-    return jsonify(swarm.get_bolt(code))
+    return cors_resp(swarm.get_bolt(code))
 
 
 @app.route("/api/bolt/<int:code>/move", methods=["GET"])
@@ -166,7 +189,7 @@ def api_bolt_set_next_move(code: int):
             swarm.get_bolt_by_id(code).set_next_move(x=int(x))
         elif digit(y):
             swarm.get_bolt_by_id(code).set_next_move(y=int(y))
-    return jsonify(swarm.get_bolt(code))
+    return cors_resp(swarm.get_bolt(code))
 
 
 @app.route("/api/bolt/<int:code>/goto", methods=["GET"])
@@ -188,9 +211,10 @@ def api_bolt_goto(code: int):
         y = request.args.get("y")
         if digit(x) and digit(y):
             route = get_path(code, int(x), int(y))
+            opt_route = optimize_path(route)
             set_path(code, route)
-            return jsonify({"path": route})
-    return jsonify(swarm.get_bolt(code))
+            return cors_resp({"path": route, "optimized_path": opt_route})
+    return cors_resp(swarm.get_bolt(code))
 
 
 @app.route("/api/bolt/<int:code>/command", methods=["GET"])
@@ -202,10 +226,10 @@ def api_bolt_command(code: int):
         if paths[code]["counter"] == len(paths[code]["path"]):
             del paths[code]
         swarm.get_bolt_by_id(code).set_position(x=loc.x, y=loc.y)
-        return jsonify({"x": loc.x, "y": loc.y})
+        return cors_resp({"x": loc.x, "y": loc.y})
     pos = swarm.get_bolt_by_id(code).next_move
     swarm.get_bolt_by_id(code).set_position(x=pos["x"], y=pos["y"])
-    return jsonify(pos)
+    return cors_resp(pos)
 
 
 @app.route("/api/bolt/<int:code>/path", methods=["GET"])
@@ -215,8 +239,9 @@ def api_bolt_path(code: int):
         x = paths[code]["path"][-1].x
         y = paths[code]["path"][-1].y
         route = get_path(code=code, x=x, y=y)
-        return jsonify({"path": route})
-    return jsonify(swarm.get_bolt_by_id(code).next_move)
+        opt_route = optimize_path(route)
+        return cors_resp({"path": route, "optimal_route": opt_route})
+    return cors_resp(swarm.get_bolt_by_id(code).next_move)
 
 
 @app.route("/api/home")
@@ -225,13 +250,13 @@ def api_go_home():
     for bolt in swarm.bolts:
         route = get_path(bolt.id, 0, 0)
         set_path(bolt.id, route)
-    return jsonify(swarm.get_bolts())
+    return cors_resp(swarm.get_bolts())
 
 
 # endregion
 # region: Nest
 @app.route("/api/nest/<code>")
-def api_nest_command(code: str):
+def api_nest_command(code: str, swarm: Swarm = swarm):
     """Api-point for the Google Nest."""
     if len(code) == 1:
         code = "0" + code
@@ -239,8 +264,9 @@ def api_nest_command(code: str):
     y = int(code[1])
     bolt_code = get_bolt(x, y)
     route = get_path(bolt_code, x, y)
+    opt_route = optimize_path(route)
     set_path(bolt_code, route)
-    return {"bolt": bolt_code, "path": route}
+    return cors_resp({"bolt": bolt_code, "path": route, "optimal_route": opt_route})
 
 
 # endregion
@@ -253,8 +279,8 @@ def api_get_maze():
     y = request.args.get("y")
     value = request.args.get("v")
     if digit(x) and digit(y) and digit(value):
-        FACTORY_HALL[int(y)][int(x)] = int(value)
-    return jsonify({"maze": FACTORY_HALL})
+        factory_layout[int(y)][int(x)] = int(value)
+    return cors_resp({"maze": factory_layout})
 
 
 # endregion
@@ -278,7 +304,7 @@ def digit(string_value: str):
     return string_value and string_value.isdigit()
 
 
-def get_path(code: int, x: int, y: int):
+def get_path(code: int, x: int, y: int, swarm: Swarm = swarm, layout=factory_layout):
     """Get a path via A* for the given BOLT and coordinates.
 
     Parameters
@@ -296,15 +322,20 @@ def get_path(code: int, x: int, y: int):
         The final route from the current postition to the end position
     """
     pos = swarm.get_bolt_by_id(code).position
-    start = Location(x=int(pos["x"]), y=int(pos["y"]))
-    m = Maze(factory=FACTORY_HALL, start=start, finish=Location(x=x, y=y))
+    return find_path(pos["x"], pos["y"], x, y, layout=layout)
+
+
+def find_path(x1, y1, x2, y2, layout=factory_layout):
+    start = Location(x=x1, y=y1)
+    finish = Location(x=x2, y=y2)
+    m = Maze(factory=layout, start=start, finish=finish)
     distance = manhattan_distance(m.finish)
     final_astar, _ = astar(m.start, m.finish_line, m.frontier, distance)
     final_astar.append(m.finish)
-    return final_astar
+    return [start] + final_astar
 
 
-def set_path(code: int, path: List[Location]):
+def set_path(code: int, path: List[Location], swarm: Swarm = swarm):
     """Set the Path of Bolt[<code>].
 
     Parameters
@@ -346,13 +377,13 @@ def optimize_path(path: List[Location]):
             counter += 1
         optimized_path.append(path[counter - 1])
         if optimized_path[-1] != path[-1]:
-            x = path[counter].x
-            y = path[counter].y
+            x = path[counter - 1].x
+            y = path[counter - 1].y
     optimized_path = optimized_path[1:]
     return optimized_path
 
 
-def get_bolt(x: int, y: int):
+def get_bolt(x: int, y: int, swarm: Swarm = swarm):
     """Get the id of the nearest Bolt to position x, y.
 
     Parameters
@@ -370,19 +401,23 @@ def get_bolt(x: int, y: int):
     min_dist = 100
     bolt_id = -1
     for bolt in swarm.bolts:
-        curr_dist = calc_dist(bolt.position, x, y)
-        if not bolt.is_busy() and curr_dist < min_dist and curr_dist > 0:
+        curr_dist = calc_dist(start_pos=bolt.position, x=x, y=y)
+        if (
+            not bolt.is_busy()
+            and curr_dist < min_dist
+            and (curr_dist > 0 or bolt.position["x"] != x or bolt.position["y"] != y)
+        ):
             bolt_id = bolt.id
             min_dist = curr_dist
     return bolt_id
 
 
-def calc_dist(xy_dict: Dict[str, int], x: int, y: int):
+def calc_dist(start_pos: Dict[str, int], x: int, y: int):
     """Calc the length of a path from the Bolt to <x> and <y>.
 
     Parameters
     ----------
-    xy_dict : Dict[str, int]
+    start_pos : Dict[str, int]
         The x and y position of the BOLT
     x : int
         The end.x position
@@ -394,11 +429,31 @@ def calc_dist(xy_dict: Dict[str, int], x: int, y: int):
     int
         The total length of the path
     """
-    start = Location(x=int(xy_dict["x"]), y=int(xy_dict["y"]))
-    m = Maze(factory=FACTORY_HALL, start=start, finish=Location(x=x, y=y))
+    start = Location(x=int(start_pos["x"]), y=int(start_pos["y"]))
+    m = Maze(factory=factory_layout, start=start, finish=Location(x=x, y=y))
     distance = manhattan_distance(m.finish)
     final_astar, _ = astar(m.start, m.finish_line, m.frontier, distance)
     return len(final_astar)
+
+
+def cors_resp(data: Any):
+    """cors_resp will create responses with CORS access
+
+    Parameters
+    ----------
+    data : str
+        The data to be send
+
+    Returns
+    -------
+    Response
+        Response able with CORS
+    """
+    response = jsonify(data)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Allow-Headers", "*")
+    response.headers.add("Access-Control-Allow-Methods", "*")
+    return response
 
 
 # endregion
