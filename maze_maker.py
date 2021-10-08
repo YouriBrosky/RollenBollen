@@ -35,14 +35,12 @@ class Maze:
         factory=factory_hall,
         rows=10,
         columns=10,
-        barriers=0.4,
         start=Location(0, 0),
         finish=Location(9, 0),
     ):
         self.factory: List[List[int]] = factory
         self.rows: int = rows
         self.columns: int = columns
-        self.barriers: float = barriers
         self.start: Location = start
         self.finish: Location = finish
         self.maze: List[List[MazeSymbol]] = [
@@ -91,23 +89,6 @@ class Maze:
         for loc in path:
             self.maze[loc.x][loc.y] = MazeSymbol.empty
 
-    def __str__(self):
-        """Prints the current maze state if used outside of browser, mainly for debugging"""
-        pretty_printed = ""
-        for num, row in enumerate(self.maze):
-            if num == 0:
-                pretty_printed += "".join("_" for _ in range(self.columns + 2)) + "\n"
-            pretty_printed += "|"
-            for space in row:
-                pretty_printed += space
-            if num == (self.columns - 1):
-                pretty_printed += (
-                    "|\n" + "".join("-" for _ in range(self.columns + 2)) + "\n"
-                )
-                break
-            pretty_printed += "|\n"
-        return pretty_printed
-
 
 def manhattan_distance(finish: Location):
     def distance(loc: Location):
@@ -116,20 +97,3 @@ def manhattan_distance(finish: Location):
         return xdistance + ydistance
 
     return distance
-
-
-if __name__ == "__main__":
-    m = Maze()
-    print(m)
-    depth_path, depth_search = depth_first_search(m.start, m.finish_line, m.frontier)
-    if depth_path is None:
-        print("No successful solution for this maze")
-    m.draw_path(depth_path)
-    print(m)
-    m.clear_path(depth_path)
-    distance = manhattan_distance(m.finish)
-    astar_path, astar_search = astar(m.start, m.finish_line, m.frontier, distance)
-    if astar_path is None:
-        print("No successful solution to this maze.")
-    m.draw_path(astar_path)
-    print(m)
