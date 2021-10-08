@@ -1,3 +1,4 @@
+from time import sleep
 import json
 import unittest
 
@@ -28,19 +29,6 @@ class TestAppServer(unittest.TestCase):
     def client_move(self, code=0, x=0, y=0):
         self.client.get(f"{self.API}/bolt/{code}/moved?x={x}&y={y}")
         self.client.get(f"{self.API}/bolt/{code}/move?x={x}&y={y}")
-
-    def test_page_home(self):
-        data = self.client.get("/")
-        print(data.status_code)
-        self.assertGreater(
-            len(str(data.response)),
-            6000,
-            f"{len(str(data.response))} is not greater then {6000}",
-        )
-        self.assertIn("<title>RollenBollen | QRM4.0</title>", str(data.response))
-        self.assertEqual(data.request.method, "GET")
-        self.assertEqual(data.request.path, "/")
-        self.assertEqual(data.status_code, 200)
 
     def test_reset_webserver(self):
         resp = handle_client_request(self.client.get(f"{self.API}/bolt"))
