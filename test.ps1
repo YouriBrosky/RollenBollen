@@ -1,0 +1,1 @@
+python -m nose --with-coverage --cover-html --cover-html-dir="docs/test" --cover-package=RollenBollen --cover-package=test --cover-tests
