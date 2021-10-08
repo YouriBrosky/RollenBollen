@@ -4,7 +4,7 @@ from collections import deque
 from heapq import heappop, heappush
 from typing import Callable, List
 
-from util import Location
+from RollenBollen.util import Location
 
 
 class Stack:

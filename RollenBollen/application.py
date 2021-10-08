@@ -4,9 +4,9 @@ from typing import Any, Dict, List, Union
 import numpy as np
 from flask import Flask, jsonify, render_template, request
 
-from bolt import Bolt, Swarm
-from maze_maker import Location, Maze, manhattan_distance
-from maze_search import astar, breadth_first_search, depth_first_search
+from RollenBollen.bolt import Bolt, Swarm
+from RollenBollen.maze_maker import Location, Maze, manhattan_distance
+from RollenBollen.maze_search import astar, breadth_first_search, depth_first_search
 
 app: Flask = Flask(__name__, template_folder="templates")
 swarm: Swarm = Swarm()
@@ -401,7 +401,11 @@ def get_bolt(x: int, y: int, swarm: Swarm = swarm):
     bolt_id = -1
     for bolt in swarm.bolts:
         curr_dist = calc_dist(start_pos=bolt.position, x=x, y=y)
-        if not bolt.is_busy() and curr_dist < min_dist and curr_dist > 0:
+        if (
+            not bolt.is_busy()
+            and curr_dist < min_dist
+            and (curr_dist > 0 or bolt.position["x"] != x or bolt.position["y"] != y)
+        ):
             bolt_id = bolt.id
             min_dist = curr_dist
     return bolt_id
