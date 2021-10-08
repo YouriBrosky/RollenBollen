@@ -14,11 +14,7 @@
   <div id="root"></div>
 
   <script type="text/babel">
-  // TODO: terugveranderen van geel naar lichtblauw wanneer bolt pad aflegt
-// TODO: FR12; af te leggen pad weergeven COULD
-// TODO: FR13; server reset knop 
-// TODO: FR14; aansturen per bolt en aansturen dichtsbijzijnde (tov doel) COULD
-// TODO: FR15; alle bolts naar 'home' sturen knop
+    // TODO: FR14; aansturen per bolt en aansturen dichtsbijzijnde (tov doel) COULD
     window.onload = function () {
       function App(props) {
         const apiLink = 'https://rollenbollen.azurewebsites.net/api/'
@@ -27,7 +23,10 @@
         const [grids, setGrids] = React.useState([]);
         const [bolts, setBolts] = React.useState([]);
 
-        const getMaze= async () => {
+        
+
+        React.useEffect(() => {
+          const getMaze= async () => {
             const response = await fetch(apiLink + 'maze');
             const json = await response.json();
 
@@ -48,8 +47,6 @@
             }  
             setGrids(array)
           }
-
-        React.useEffect(() => {
           getMaze()
         }, []); // remove brackets if you want to loop request the server
 
@@ -67,31 +64,26 @@
           // }
 
           const getBolts = async () => {
-            console.log('begin')
             const response = await fetch(apiLink + 'bolt');
             const json = await response.json();
             setBolts(await json)
+            
 
             let array = grids
             if (bolts.length > 0) {
               bolts.map((element) => {
-                // current position
-                // array[element.position.x * 10 + element.position.y].util = '#fcd200'
-                
                 // when goal is reached
                 if (element.next_move.x * 10 + element.next_move.y == element.position.x * 10 + element.position.y) {
-                  // if (element.position.x * 10 + element.position.y == '##42b132') {
-                  //   console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaa')
-                  //   getMaze()
-                  // }
-                  
-                  array[element.position.x * 10 + element.position.y].util = '#009ddb' //overrides
+                  if (array[element.next_move.x * 10 + element.next_move.y].util != '#009ddb') {
+                    array[element.position.x * 10 + element.position.y].util = '#009ddb' //overrides
+                    
+                    array.map((element) => {
+                      if (element.util == '#fcd200') {
+                        element.util = '#C8EFF9'
+                      }
+                    })
+                  }
 
-                  
-                  
-
-                  
-                  // TODO: remove all passed grids here
                 } else { // goal hasn't been reached
                   if (array[element.next_move.x * 10 + element.next_move.y].util != '#42b132') {
                     array[element.next_move.x * 10 + element.next_move.y].util = '#42b132'
@@ -100,21 +92,15 @@
                   (async () => {
                     const response = await fetch(apiLink + 'bolt/' + element.id + '/path');
                     const json = await response.json();
-                    console.log(await json)
-                    if (json.hasOwnProperty('path')) {
-                      console.log('path')
+                    if (await json.hasOwnProperty('path')) {
                       json.path.map((element) => { 
                         if (array[element[0] * 10 + element[1]].util != '#fcd200') {
                           array[element[0] * 10 + element[1]].util = '#fcd200'
                         }
-                    })
+                      })
                     } 
                   })()
-                  
-
-                  console.log('end')
                 } 
-                // console.log('id: ', element.id, array[element.position.x * 10 + element.position.y].util)
               })
               setGrids(array)
             }
@@ -123,11 +109,8 @@
           if (grids != []) {
             getBolts()
           }
-        }) // TODO: needs to keep refreshing, should work (json.map function is een onderkruipsel)
+        }) // should work (json.map function is een onderkruipsel)
 
-        // React.useEffect(() => {
-        //   console.log('bolt changed')
-        // }, [bolts]) // when bolts changes, do this
 
         return (
           <div className="app-container">
@@ -201,7 +184,7 @@
 
       function BoltView(props) {
         return (
-          <div className="bolt-div">{props.bolts.map((element, index) => (
+          <div className="bolt-div" onClick={props.onClick}>{props.bolts.map((element, index) => (
             <div key={element.id}
               className="bolt" 
               style={{ backgroundColor: "#009ddb" }}
@@ -242,7 +225,6 @@
       const [color, setColor] = React.useState(props.item.util);
 
       React.useEffect(() => {
-        console.log('render grid')
         setColor(props.item.util)
       }, [props.item.util]) // if color changes, re-render
 
