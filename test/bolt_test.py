@@ -1,6 +1,6 @@
 import unittest
 
-from bolt import Bolt, Swarm
+from RollenBollen.bolt import Bolt, Swarm
 
 
 class TestBolt(unittest.TestCase):
