@@ -66,4 +66,4 @@ class Swarm:
         """Get the details of a single BOLT."""
         if code <= len(self.bolts):
             return self.bolts[code - 1]
-        raise Exception(f"Unkown bolt<{code}>, only got bolts [{self.bolts}]")
+        return None

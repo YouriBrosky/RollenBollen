@@ -2,7 +2,8 @@
 
 from typing import List
 
-from RollenBollen.util import Location
+from maze_search import astar, depth_first_search
+from util import Location
 
 factory_hall = [
     [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
@@ -114,3 +115,20 @@ def manhattan_distance(finish: Location):
         return xdistance + ydistance
 
     return distance
+
+
+if __name__ == "__main__":
+    m = Maze()
+    print(m)
+    depth_path, depth_search = depth_first_search(m.start, m.finish_line, m.frontier)
+    if depth_path is None:
+        print("No successful solution for this maze")
+    m.draw_path(depth_path)
+    print(m)
+    m.clear_path(depth_path)
+    distance = manhattan_distance(m.finish)
+    astar_path, astar_search = astar(m.start, m.finish_line, m.frontier, distance)
+    if astar_path is None:
+        print("No successful solution to this maze.")
+    m.draw_path(astar_path)
+    print(m)
