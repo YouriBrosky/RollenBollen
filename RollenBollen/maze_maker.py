@@ -32,12 +32,15 @@ class Maze:
     def __init__(
         self,
         factory=factory_hall,
+        barriers=0.4,
         start=Location(0, 0),
         finish=Location(9, 0),
     ):
         self.factory: List[List[int]] = factory
+
         self.rows: int = len(factory)
         self.columns: int = len(factory[0])
+        self.barriers: float = barriers
         self.start: Location = start
         self.finish: Location = finish
         self.maze: List[List[MazeSymbol]] = [
@@ -85,6 +88,23 @@ class Maze:
     def clear_path(self, path: List[Location]):
         for loc in path:
             self.maze[loc.x][loc.y] = MazeSymbol.empty
+
+    def __str__(self):
+        """Prints the current maze state if used outside of browser, mainly for debugging"""
+        pretty_printed = ""
+        for num, row in enumerate(self.maze):
+            if num == 0:
+                pretty_printed += "".join("_" for _ in range(self.columns + 2)) + "\n"
+            pretty_printed += "|"
+            for space in row:
+                pretty_printed += space
+            if num == (self.columns - 1):
+                pretty_printed += (
+                    "|\n" + "".join("-" for _ in range(self.columns + 2)) + "\n"
+                )
+                break
+            pretty_printed += "|\n"
+        return pretty_printed
 
 
 def manhattan_distance(finish: Location):
