@@ -7,7 +7,7 @@
   <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
   <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-  <link rel="stylesheet" href="stylesheet.css" />
+  <link rel="stylesheet" href="static/stylesheet.css" />
 </head>
 
 <body>
@@ -25,32 +25,32 @@
         const [bolts, setBolts] = React.useState([]);
 
         React.useEffect(() => {
-          const getMaze= async () => {
+          const getMaze = async () => {
             const response = await fetch(apiLink + 'maze');
             const json = await response.json();
 
             const maze = json.maze // JSON is object with property 'maze'
 
             let array = []
-            for(var i = 0; i < maze.length; i++) {
-              for(var j = 0; j < maze[i].length; j++) {
+            for (var i = 0; i < maze.length; i++) {
+              for (var j = 0; j < maze[i].length; j++) {
                 array.push(
                   {
-                    index: i * 10 + j, 
-                    util: maze[i][j] == 0 ? 
+                    index: i * 10 + j,
+                    util: maze[i][j] == 0 ?
                       ('#C8EFF9') : //available
                       ('#e71d07')   //obstacle
                   }
                 )
               }
-            }  
+            }
             setGrids(array)
           }
           getMaze()
         }, []); // remove brackets if you want to loop request the server
 
-        const setMaze= async (x, y) => { // handles toggle of grid by x and y
-          let param = '?x=' + x + '&y=' + y + '&v=' + (cursor == '#C8EFF9'? ('0') : ('1'))
+        const setMaze = async (x, y) => { // handles toggle of grid by x and y
+          let param = '?x=' + x + '&y=' + y + '&v=' + (cursor == '#C8EFF9' ? ('0') : ('1'))
           const response = await fetch(apiLink + 'maze' + param);
           const json = await response.json();
         }
@@ -68,7 +68,7 @@
                 if (element.next_move.x * 10 + element.next_move.y == element.position.x * 10 + element.position.y) {
                   if (array[element.next_move.x * 10 + element.next_move.y].util != '#009ddb') {
                     array[element.position.x * 10 + element.position.y].util = '#009ddb' // overrides
-                    
+
                     array.map((element) => {
                       let util = '#fcd200' + bolts[index].id
                       console.log(util)
@@ -82,20 +82,20 @@
                   if (array[element.next_move.x * 10 + element.next_move.y].util != '#42b132') {
                     array[element.next_move.x * 10 + element.next_move.y].util = '#42b132'
                   }
-                  
+
                   (async () => {
-                    let boltId = element.id 
+                    let boltId = element.id
                     const response = await fetch(apiLink + 'bolt/' + element.id + '/path');
                     const json = await response.json();
                     if (await json.hasOwnProperty('path')) {
-                      json.path.map((element) => { 
+                      json.path.map((element) => {
                         if (array[element[0] * 10 + element[1]].util != ('#fcd200' + boltId)) {
                           array[element[0] * 10 + element[1]].util = '#fcd200' + boltId
                         }
                       })
-                    } 
+                    }
                   })()
-                } 
+                }
               })
               setGrids(array)
             }
@@ -110,16 +110,16 @@
         return (
           <div className="app-container">
             <audio controls>
-                <source src="https://vgmsite.com/soundtracks/super-mario-64-soundtrack/zqtpbfkskm/06%20Slider.mp3" type="audio/mpeg"/>
+              <source src="https://vgmsite.com/soundtracks/super-mario-64-soundtrack/zqtpbfkskm/06%20Slider.mp3" type="audio/mpeg" />
             </audio>
             <div className="container">
               <div className="side-container">
                 <ButtonView setCursor={setCursor} grids={grids} />
               </div>
-              {grids != [] ? (<GridView cursor={cursor} grids={grids} setMaze={setMaze} />) : (null)}  
+              {grids != [] ? (<GridView cursor={cursor} grids={grids} setMaze={setMaze} />) : (null)}
 
-              {bolts != [] ? <BoltView bolts={bolts} onClick={() =>console.log(grids)}/> : null}
-              
+              {bolts != [] ? <BoltView bolts={bolts} onClick={() => console.log(grids)} /> : null}
+
             </div>
             <div className="title-view">
               <img src="https://fontmeme.com/permalink/211007/ee6670dba76f4367bd3d070b9a3cb143.png" alt="super-mario-lettertype" />
@@ -148,7 +148,7 @@
           }, 100);
 
           // check if all bolts are really reset
-          setTimeout(() => {  
+          setTimeout(() => {
             eraseBoltsFromGrid(array)
           }, 5000);
         }
@@ -178,15 +178,15 @@
             <div className="button" style={{ backgroundColor: "#42b132" }}>
               <h2>Doel</h2>
             </div>
-            <div 
-              className="button" 
+            <div
+              className="button"
               style={{ backgroundColor: "#fc9803" }}
               onClick={() => onReset()}
             >
               <h2>Reset BOLTs</h2>
             </div>
-            <div 
-              className="button" 
+            <div
+              className="button"
               style={{ backgroundColor: "#b103fc" }}
               onClick={() => {
                 fetch('https://rollenbollen.azurewebsites.net/api/' + 'home') // sends all connected BOLTs home
@@ -202,7 +202,7 @@
         return (
           <div className="bolt-div" onClick={props.onClick}>{props.bolts.map((element, index) => (
             <div key={element.id}
-              className="bolt" 
+              className="bolt"
               style={{ backgroundColor: "#009ddb" }}
             >
               <h3>ID: {element.id}, POS: {element.position.x.toString() + element.position.y.toString()}</h3>
@@ -229,7 +229,7 @@
                   key={props.grids[index].index}
                   changeGrid={() => changeGrid(index)}
                   cursor={props.cursor}
-                /> 
+                />
               ))}
             </div>
           </div>
@@ -238,14 +238,14 @@
     };
 
     function Grid(props) {
-      const [color, setColor] = React.useState(props.item.util.substring(0,7));
+      const [color, setColor] = React.useState(props.item.util.substring(0, 7));
 
       React.useEffect(() => {
-        setColor(props.item.util.substring(0,7))
+        setColor(props.item.util.substring(0, 7))
       }, [props.item.util]) // if color changes, re-render
 
 
-      const onChangeGrid = () => { 
+      const onChangeGrid = () => {
         if (props.cursor != color) {
           props.changeGrid();
         }
@@ -264,7 +264,7 @@
         </div>
       );
     }
-    
+
   </script>
 </body>
 
