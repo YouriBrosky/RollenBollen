@@ -1,6 +1,6 @@
 import unittest
 
-from RollenBollen.application import (
+from application import (
     calc_dist,
     digit,
     find_path,
@@ -8,8 +8,8 @@ from RollenBollen.application import (
     get_path,
     optimize_path,
 )
-from RollenBollen.bolt import Bolt, Swarm
-from RollenBollen.util import Location
+from bolt import Bolt, Swarm
+from util import Location
 
 
 def create_bolt(x=None, y=None):

@@ -2,9 +2,9 @@ from time import sleep
 import json
 import unittest
 
-from RollenBollen.application import app
+from application import app
 
-from RollenBollen.bolt import Bolt
+from bolt import Bolt
 
 
 def create_bolt(x=None, y=None):
