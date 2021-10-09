@@ -8,10 +8,9 @@ from bolt import Bolt, Swarm
 from maze_maker import Location, Maze, manhattan_distance
 from maze_search import astar, breadth_first_search, depth_first_search
 
-app: Flask = Flask(__name__, template_folder="templates")
+app: Flask = Flask(__name__, template_folder="user-interface")
 swarm: Swarm = Swarm()
 paths: Dict[int, Dict[str, Union[int, List[Location]]]] = {}
-
 factory_layout = [
     [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
     [1, 1, 1, 1, 0, 1, 1, 0, 1, 1],
@@ -30,52 +29,8 @@ factory_layout = [
 @app.route("/", methods=["GET", "POST"])
 def page_home():
     """Return the home page of the website."""
-    sx = request.args.get("sx")
-    sy = request.args.get("sy")
-    fx = request.args.get("fx")
-    fy = request.args.get("fy")
-    if digit(sx) and digit(sy):
-        start = Location(y=int(sx), x=int(sy))
-    else:
-        start = Location(x=0, y=0)
-    if digit(fx) and digit(fy):
-        finish = Location(y=int(fx), x=int(fy))
-    else:
-        finish = Location(x=9, y=0)
-    m = Maze(factory=factory_layout, start=start, finish=finish)
-    if request.method == "POST" and request.form["rand"] == "loc":
-        # Section: New random finish
-        rand_x = np.random.choice(np.arange(10))
-        rand_y = (
-            np.random.choice(np.arange(10))
-            if rand_x != 0
-            else np.random.choice(np.arange(1, 10))
-        )
-        m = Maze(
-            factory=factory_layout,
-            start=start,
-            finish=Location(x=rand_x, y=rand_y),
-        )
-    final_dfs, path_dfs = depth_first_search(m.start, m.finish_line, m.frontier)
-    if path_dfs is None:
-        while path_dfs is None:
-            m = Maze(factory=factory_layout, start=start, finish=finish)
-            final_dfs, path_dfs = depth_first_search(m.start, m.finish_line, m.frontier)
-    final_bfs, path_bfs = breadth_first_search(m.start, m.finish_line, m.frontier)
-    distance = manhattan_distance(m.finish)
-    final_astar, path_astar = astar(m.start, m.finish_line, m.frontier, distance)
-
-    return render_template(
-        "home.html",
-        maze_map=m.maze,
-        dfs_path=path_dfs,
-        bfs_path=path_bfs,
-        astar_path=path_astar,
-        final_bfs=final_bfs,
-        final_dfs=final_dfs,
-        final_astar=final_astar,
-        optimal_final_astar=optimize_path(final_astar),
-    )
+    with open("./user-interface/index.html", encoding="UTF8") as f:
+        return "\n".join(f.readlines())
 
 
 @app.route("/api/reset", methods=["GET"])
