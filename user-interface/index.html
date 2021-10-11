@@ -12,148 +12,171 @@
 
 <body>
   <div id="root"></div>
-
   <script type="text/babel">
     // TODO: FR14; aansturen per bolt en aansturen dichtsbijzijnde (tov doel) COULD
-    // TODO:  testen in de ruimte
-    // TODO: websocket?
+    // TODO: Testen in de ruimte
+    // TODO: Websocket?
+    const apiLink = "https://rollenbollen.azurewebsites.net/api/";
     window.onload = function () {
       function App(props) {
-        const apiLink = 'https://rollenbollen.azurewebsites.net/api/'
-
         const [cursor, setCursor] = React.useState("#C8EFF9");
         const [grids, setGrids] = React.useState([]);
         const [bolts, setBolts] = React.useState([]);
-
         React.useEffect(() => {
           const getMaze = async () => {
-            const response = await fetch(apiLink + 'maze');
+            const response = await fetch(apiLink + "maze");
             const json = await response.json();
-
-            const maze = json.maze // JSON is object with property 'maze'
-
-            let array = []
+            const maze = json.maze; // JSON is object with property 'maze'
+            let array = [];
             for (var i = 0; i < maze.length; i++) {
               for (var j = 0; j < maze[i].length; j++) {
-                array.push(
-                  {
-                    index: i * 10 + j,
-                    util: maze[i][j] == 0 ?
-                      ('#C8EFF9') : //available
-                      ('#e71d07')   //obstacle
-                  }
-                )
+                array.push({
+                  index: i * 10 + j,
+                  util:
+                    maze[i][j] == 0
+                      ? "#C8EFF9" //available
+                      : "#e71d07", //obstacle
+                });
               }
             }
-            setGrids(array)
-          }
-          getMaze()
+            setGrids(array);
+          };
+          getMaze();
         }, []); // remove brackets if you want to loop request the server
-
-        const setMaze = async (x, y) => { // handles toggle of grid by x and y
-          let param = '?x=' + x + '&y=' + y + '&v=' + (cursor == '#C8EFF9' ? ('0') : ('1'))
-          const response = await fetch(apiLink + 'maze' + param);
-          const json = await response.json();
-        }
-
+        const setMaze = async (x, y) => {
+          if (typeof cursor === "string") {
+            if (cursor == "#42b132") {
+              const response = await fetch(apiLink + "nest/" + y.toString() + x.toString())
+              const json = await response.json();
+            } else {
+              // handles toggle of grid by x and y
+              let param =
+                "?x=" + x + "&y=" + y + "&v=" + (cursor == "#C8EFF9" ? "0" : "1");
+              const response = await fetch(apiLink + "maze" + param);
+              const json = await response.json();
+            }
+          }
+          else {
+            let bolt = "bolt/" + cursor
+            let param = "?x=" + y + "&y=" + x
+            const response = await fetch(apiLink + bolt + "/goto" + param);
+            const json = await response.json();
+          }
+        };
         React.useEffect(() => {
           const getBolts = async () => {
-            const response = await fetch(apiLink + 'bolt');
+            const response = await fetch(apiLink + "bolt");
             const json = await response.json();
-            setBolts(await json)
-
-            let array = grids
+            setBolts(await json);
+            let array = grids;
             if (bolts.length > 0) {
               bolts.map((element, index) => {
                 // when goal is reached
-                if (element.next_move.x * 10 + element.next_move.y == element.position.x * 10 + element.position.y) {
-                  if (array[element.next_move.x * 10 + element.next_move.y].util != '#009ddb') {
-                    array[element.position.x * 10 + element.position.y].util = '#009ddb' // overrides
-
+                if (
+                  element.next_move.x * 10 + element.next_move.y ==
+                  element.position.x * 10 + element.position.y
+                ) {
+                  if (
+                    array[element.next_move.x * 10 + element.next_move.y]
+                      .util != "#009ddb"
+                  ) {
+                    array[element.position.x * 10 + element.position.y].util =
+                      "#009ddb"; // overrides
                     array.map((element) => {
-                      let util = '#fcd200' + bolts[index].id
-                      console.log(util)
-                      if (element.util == '#fcd200' + bolts[index].id) { // erases route of specific bolt
-                        element.util = '#C8EFF9'
+                      let util = "#fcd200" + bolts[index].id;
+                      console.log(util);
+                      if (element.util == "#fcd200" + bolts[index].id) {
+                        // erases route of specific bolt
+                        element.util = "#C8EFF9";
                       }
-                    })
+                    });
                   }
-
-                } else { // goal hasn't been reached
-                  if (array[element.next_move.x * 10 + element.next_move.y].util != '#42b132') {
-                    array[element.next_move.x * 10 + element.next_move.y].util = '#42b132'
+                } else {
+                  // goal hasn't been reached
+                  if (
+                    array[element.next_move.x * 10 + element.next_move.y]
+                      .util != "#42b132"
+                  ) {
+                    array[
+                      element.next_move.x * 10 + element.next_move.y
+                    ].util = "#42b132";
                   }
-
                   (async () => {
-                    let boltId = element.id
-                    const response = await fetch(apiLink + 'bolt/' + element.id + '/path');
+                    let boltId = element.id;
+                    const response = await fetch(
+                      apiLink + "bolt/" + element.id + "/path"
+                    );
                     const json = await response.json();
-                    if (await json.hasOwnProperty('path')) {
+                    if (await json.hasOwnProperty("path")) {
                       json.path.map((element) => {
-                        if (array[element[0] * 10 + element[1]].util != ('#fcd200' + boltId)) {
-                          array[element[0] * 10 + element[1]].util = '#fcd200' + boltId
+                        if (
+                          array[element[0] * 10 + element[1]].util !=
+                          "#fcd200" + boltId
+                        ) {
+                          array[element[0] * 10 + element[1]].util =
+                            "#fcd200" + boltId;
                         }
-                      })
+                      });
                     }
-                  })()
+                  })();
                 }
-              })
-              setGrids(array)
+              });
+              setGrids(array);
             }
-          }
-
+          };
           if (grids != []) {
-            getBolts()
+            getBolts();
           }
-        }) // should work (json.map function is een onderkruipsel)
-
-
+        }); // should work (json.map function is een onderkruipsel)
         return (
           <div className="app-container">
             <audio controls>
-              <source src="https://vgmsite.com/soundtracks/super-mario-64-soundtrack/zqtpbfkskm/06%20Slider.mp3" type="audio/mpeg" />
+              <source
+                src="https://vgmsite.com/soundtracks/super-mario-64-soundtrack/zqtpbfkskm/06%20Slider.mp3"
+                type="audio/mpeg"
+              />
             </audio>
             <div className="container">
               <div className="side-container">
                 <ButtonView setCursor={setCursor} grids={grids} />
               </div>
-              {grids != [] ? (<GridView cursor={cursor} grids={grids} setMaze={setMaze} />) : (null)}
-
-              {bolts != [] ? <BoltView bolts={bolts} onClick={() => console.log(grids)} /> : null}
-
+              {grids != [] ? (
+                <GridView cursor={cursor} grids={grids} setMaze={setMaze} />
+              ) : null}
+              {bolts != [] ? (
+                <BoltView setCursor={setCursor} bolts={bolts} onClick={() => console.log(grids)} />
+              ) : null}
             </div>
             <div className="title-view">
-              <img src="https://fontmeme.com/permalink/211007/ee6670dba76f4367bd3d070b9a3cb143.png" alt="super-mario-lettertype" />
+              <img
+                src="https://fontmeme.com/permalink/211007/ee6670dba76f4367bd3d070b9a3cb143.png"
+                alt="super-mario-lettertype"
+              />
             </div>
           </div>
         );
       }
       ReactDOM.render(<App />, document.getElementById("root"));
-
       function ButtonView(props) {
-
         const onReset = async () => {
           const eraseBoltsFromGrid = (array) => {
             array.map((element, index) => {
-              if (element.util == '#009ddb') {
-                array[index].util = '#C8EFF9'
+              if (element.util == "#009ddb") {
+                array[index].util = "#C8EFF9";
               }
-            })
-          }
-
-          fetch('https://rollenbollen.azurewebsites.net/api/reset')
-          let array = props.grids
-
-          setTimeout(() => {  // erase bolts after 0.1s
-            eraseBoltsFromGrid(array)
+            });
+          };
+          fetch(apiLink + "reset");
+          let array = props.grids;
+          setTimeout(() => {
+            // erase bolts after 0.1s
+            eraseBoltsFromGrid(array);
           }, 100);
-
           // check if all bolts are really reset
           setTimeout(() => {
-            eraseBoltsFromGrid(array)
+            eraseBoltsFromGrid(array);
           }, 5000);
-        }
-
+        };
         return (
           <div className="button-div">
             <div
@@ -176,7 +199,11 @@
             <div className="button" style={{ backgroundColor: "#009ddb" }}>
               <h2>Positie</h2>
             </div>
-            <div className="button" style={{ backgroundColor: "#42b132" }}>
+
+            <div
+              className="button"
+              style={{ backgroundColor: "#42b132" }}
+              onClick={() => props.setCursor("#42b132")}>
               <h2>Doel</h2>
             </div>
             <div
@@ -190,7 +217,7 @@
               className="button"
               style={{ backgroundColor: "#b103fc" }}
               onClick={() => {
-                fetch('https://rollenbollen.azurewebsites.net/api/' + 'home') // sends all connected BOLTs home
+                fetch(apiLink + "home"); // sends all connected BOLTs home
               }}
             >
               <h2>Thuisfront</h2>
@@ -198,29 +225,44 @@
           </div>
         );
       }
-
       function BoltView(props) {
         return (
-          <div className="bolt-div" onClick={props.onClick}>{props.bolts.map((element, index) => (
-            <div key={element.id}
-              className="bolt"
-              style={{ backgroundColor: "#009ddb" }}
-            >
-              <h3>ID: {element.id}, POS: {element.position.x.toString() + element.position.y.toString()}</h3>
-            </div>
-          ))}
+          <div className="bolt-div" onClick={props.onClick}>
+            {props.bolts.map((element, index) => (
+              <BoltViewCard
+                key={element.id}
+                id={element.id}
+                position={element.position}
+                setCursor={props.setCursor}
+              />
+            ))}
           </div>
-        )
+        );
       }
+      const BoltViewCard = (props) => (
+        <div
+          key={props.id}
+          className="bolt"
+          style={{ backgroundColor: "#009ddb" }}
+          onClick={() => { props.setCursor(props.id) }
+          }
+        >
+          <h3>
+            ID: {props.id}, POS:{" "}
+            {props.position.x.toString() + props.position.y.toString()}
+          </h3>
+        </div >
+      );
 
       function GridView(props) {
-
         const changeGrid = (item) => {
           // calculate x and y based on grid position
           // x and y are flipped because api contains an error
-          props.setMaze(props.grids[item].index % 10, Math.floor(props.grids[item].index / 10))
+          props.setMaze(
+            props.grids[item].index % 10,
+            Math.floor(props.grids[item].index / 10)
+          );
         };
-
         return (
           <div className="box-map">
             <div className="grid-container">
@@ -237,21 +279,18 @@
         );
       }
     };
-
     function Grid(props) {
-      const [color, setColor] = React.useState(props.item.util.substring(0, 7));
-
+      const [color, setColor] = React.useState(
+        props.item.util.substring(0, 7)
+      );
       React.useEffect(() => {
-        setColor(props.item.util.substring(0, 7))
-      }, [props.item.util]) // if color changes, re-render
-
-
+        setColor(props.item.util.substring(0, 7));
+      }, [props.item.util]); // if color changes, re-render
       const onChangeGrid = () => {
         if (props.cursor != color) {
           props.changeGrid();
         }
-      }
-
+      };
       return (
         <div
           className="grid-item"
@@ -265,7 +304,6 @@
         </div>
       );
     }
-
   </script>
 </body>
 
