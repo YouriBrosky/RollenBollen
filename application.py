@@ -1,12 +1,11 @@
 """The flask api to run the BOLT Swarm."""
 from typing import Any, Dict, List, Union
 
-import numpy as np
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, request
 
 from bolt import Bolt, Swarm
 from maze_maker import Location, Maze, manhattan_distance
-from maze_search import astar, breadth_first_search, depth_first_search
+from maze_search import astar
 
 app: Flask = Flask(__name__, template_folder="user-interface")
 swarm: Swarm = Swarm()
@@ -40,19 +39,6 @@ def reset_webserver():
     swarm = Swarm()
     global paths
     paths = {}
-    global factory_layout
-    factory_layout = [
-        [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-        [1, 1, 1, 1, 0, 1, 1, 0, 1, 1],
-        [0, 0, 0, 0, 0, 0, 1, 0, 1, 0],
-        [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-        [1, 1, 0, 1, 0, 0, 1, 0, 1, 0],
-        [0, 1, 0, 1, 1, 1, 1, 1, 1, 1],
-        [0, 0, 0, 1, 1, 1, 1, 1, 1, 1],
-        [0, 1, 0, 1, 1, 1, 1, 1, 1, 1],
-        [0, 1, 0, 1, 1, 1, 1, 1, 1, 1],
-        [0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
-    ]
     return "Success!"
 
 
@@ -229,7 +215,6 @@ def api_nest_command(code: str, swarm: Swarm = swarm):
 @app.route("/api/maze")
 def api_get_maze():
     """Give the current maze, with options to edit the options."""
-    global FACTORY_HALL
     x = request.args.get("x")
     y = request.args.get("y")
     value = request.args.get("v")
