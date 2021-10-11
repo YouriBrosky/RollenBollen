@@ -28,7 +28,11 @@ factory_layout = [
 @app.route("/", methods=["GET", "POST"])
 def page_home():
     """Return the home page of the website."""
-    with open("./user-interface/index.html", encoding="UTF8") as f:
+
+    index_page = "./client/build/index.html"
+    app.static_folder = "./client/build/static"
+    # index_page = "./user-interface/index.html"
+    with open(index_page, encoding="UTF8") as f:
         return "\n".join(f.readlines())
 
 
@@ -395,4 +399,4 @@ def cors_resp(data: Any):
 # endregion
 
 if __name__ == "__main__":
-    app.run(port=80)
+    app.run(port=80, host="0.0.0.0")
