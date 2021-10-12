@@ -5,20 +5,21 @@
   align-items: center;
   background-color: #383e42;
   height: 650px;
-  width: 250px;
+  width: 260px;
   border-radius: 15px;
-  margin-right: 20px;
+  margin-right: 10px;
   grid-gap: 10px;
   padding: 10px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .button {
+  margin-top: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
   height: 40px;
-  width: 225px;
+  width: 250px;
   border-radius: 10px;
   user-select: none;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
