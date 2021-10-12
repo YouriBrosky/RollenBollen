@@ -1,13 +1,34 @@
+/* TENT
+#009ddb
+#e71d07
+##383e42
+#48fcfaf5f
+#c8eff9
+#42b132
+#fcd200
+*/
+
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  background-color: #fcfaf5;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+div {
+  user-select: none;
+}
+
+h1 {
+  color: white;
+  font-size: 65;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+h2 {
+  color: #fcfaf5;
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+}
+
+h3 {
+  color: #fcfaf5;
+  font-family: Arial, Helvetica, sans-serif;
 }

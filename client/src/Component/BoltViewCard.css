@@ -1,0 +1,9 @@
+.bolt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40;
+  width: 225;
+  border-radius: 10px;
+  user-select: none;
+}

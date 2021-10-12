@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+export const apiLink = 'https://rollenbollen.azurewebsites.net/api/';
+export const layoutSize = 10;
 
 ReactDOM.render(
   <React.StrictMode>
