@@ -2,8 +2,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 40;
-  width: 225;
+  height: 40px;
+  width: 225px;
   border-radius: 10px;
   user-select: none;
 }
