@@ -7,8 +7,8 @@
   align-items: center;
   background-color: #383e42;
   height: 650px;
-  width: 250px;
+  width: 260px;
   border-radius: 15px;
-  margin-left: 20px;
+  margin-left: 10px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }

@@ -11,6 +11,8 @@
 }
 
 .grid-container {
+  border-radius: 5px;
+  margin: auto;
   grid-template-columns: repeat(10, 1fr);
   height: 625px;
   width: 625px;
