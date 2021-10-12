@@ -84,17 +84,17 @@ const App = props => {
             }
             (async () => {
               const boltId = element.id;
-              const response = await fetch(
+              const resp = await fetch(
                 `${apiLink}bolt/${element.id}/path`
               );
-              const json = await response.json();
-              if (await json.hasOwnProperty('path')) {
-                json.path.map(element => {
+              const respJson = await resp.json();
+              if (await respJson.hasOwnProperty('path')) {
+                respJson.path.map(jsonElement => {
                   if (
-                    array[element[0] * layoutSize + element[1]].util !==
+                    array[jsonElement[0] * layoutSize + jsonElement[1]].util !==
                     '#fcd200' + boltId
                   ) {
-                    array[element[0] * layoutSize + element[1]].util =
+                    array[jsonElement[0] * layoutSize + jsonElement[1]].util =
                       '#fcd200' + boltId;
                   }
                 });
