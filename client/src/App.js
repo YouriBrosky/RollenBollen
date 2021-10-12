@@ -39,7 +39,7 @@ const App = props => {
         await fetch(`${apiLink}nest/${y.toString()}${x.toString()}`);
       } else {
         // handles toggle of grid by x and y
-        const param = `'?x=${x}&y=${y}&v=${(cursor === '#C8EFF9' ? '0' : '1')}`;
+        const param = `?x=${x}&y=${y}&v=${(cursor === '#C8EFF9' ? '0' : '1')}`;
         await fetch(`${apiLink}maze${param}`);
       }
     } else {
