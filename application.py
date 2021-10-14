@@ -248,7 +248,7 @@ def digit(string_value: str):
     return string_value and string_value.isdigit()
 
 
-def get_path(code: int, x: int, y: int, swarm: Swarm = swarm, layout=factory_layout):
+def get_path(code: int, x: int, y: int, layout=factory_layout):
     """Get a path via A* for the given BOLT and coordinates.
 
     Parameters
