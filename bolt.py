@@ -1,8 +1,6 @@
 """The BOLT and Swarm class document."""
 from typing import Dict, List
 
-from application import digit
-
 
 class Bolt:
     """The BOLT python class."""
@@ -19,17 +17,17 @@ class Bolt:
 
     def set_next_move(self, x=None, y=None):
         """Set the next move of the BOLT."""
-        if x is not None and digit(x):
-            self.next_move["x"] = int(x)
-        if y is not None and digit(y):
-            self.next_move["y"] = int(y)
+        if x is not None:
+            self.next_move["x"] = x
+        if y is not None:
+            self.next_move["y"] = y
 
     def set_position(self, x=None, y=None):
         """Set the position of the BOLT to the given arguments <x> and <y>."""
-        if x is not None and digit(x):
-            self.position["x"] = int(x)
-        if y is not None and digit(y):
-            self.position["y"] = int(y)
+        if x is not None:
+            self.position["x"] = x
+        if y is not None:
+            self.position["y"] = y
 
     def is_busy(self):
         """Determine if the bolt still has a task at hand."""
@@ -68,4 +66,4 @@ class Swarm:
         """Get the details of a single BOLT."""
         if code <= len(self.bolts):
             return self.bolts[code - 1]
-        return self.bolts[0]
+        return None
