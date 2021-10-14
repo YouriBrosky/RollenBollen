@@ -102,12 +102,7 @@ def api_bolt_move_x_y(code: int):
     if code:
         x = request.args.get("x")
         y = request.args.get("y")
-        if digit(x) and digit(y):
-            swarm.get_bolt_by_id(code).set_position(x=int(x), y=int(y))
-        elif digit(x):
-            swarm.get_bolt_by_id(code).set_position(x=int(x))
-        elif digit(y):
-            swarm.get_bolt_by_id(code).set_position(y=int(y))
+        swarm.get_bolt_by_id(code).set_position(x=x, y=y)
     return cors_resp(swarm.get_bolt(code))
 
 
@@ -128,12 +123,7 @@ def api_bolt_set_next_move(code: int):
     if code:
         x = request.args.get("x")
         y = request.args.get("y")
-        if digit(x) and digit(y):
-            swarm.get_bolt_by_id(code).set_next_move(x=int(x), y=int(y))
-        elif digit(x):
-            swarm.get_bolt_by_id(code).set_next_move(x=int(x))
-        elif digit(y):
-            swarm.get_bolt_by_id(code).set_next_move(y=int(y))
+        swarm.get_bolt_by_id(code).set_next_move(x=int(x), y=int(y))
     return cors_resp(swarm.get_bolt(code))
 
 
@@ -172,6 +162,7 @@ def api_bolt_command(code: int):
             del paths[code]
         swarm.get_bolt_by_id(code).set_position(x=loc.x, y=loc.y)
         return cors_resp({"x": loc.x, "y": loc.y})
+    # =============================================================== #
     pos = swarm.get_bolt_by_id(code).next_move
     swarm.get_bolt_by_id(code).set_position(x=pos["x"], y=pos["y"])
     return cors_resp(pos)
@@ -186,6 +177,7 @@ def api_bolt_path(code: int):
         route = get_path(code=code, x=x, y=y)
         opt_route = optimize_path(route)
         return cors_resp({"path": route, "optimal_route": opt_route})
+    # ============================================================== #
     return cors_resp(swarm.get_bolt_by_id(code).next_move)
 
 
@@ -248,7 +240,7 @@ def digit(string_value: str):
     return string_value and string_value.isdigit()
 
 
-def get_path(code: int, x: int, y: int, swarm: Swarm = swarm, layout=factory_layout):
+def get_path(code: int, x: int, y: int, layout=factory_layout):
     """Get a path via A* for the given BOLT and coordinates.
 
     Parameters
