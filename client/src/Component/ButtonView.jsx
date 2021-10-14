@@ -22,7 +22,7 @@ const ButtonView = props => {
         }, 5000);
     };
     return (
-        <div className='button-div'>
+        <div className='panel'>
             <div
                 className='button'
                 style={{ backgroundColor: '#C8EFF9' }}
@@ -36,12 +36,6 @@ const ButtonView = props => {
                 onClick={() => props.setCursor('#e71d07')}
             >
                 <h2>Obstakel</h2>
-            </div>
-            <div className='button' style={{ backgroundColor: '#fcd200' }}>
-                <h2>Route</h2>
-            </div>
-            <div className='button' style={{ backgroundColor: '#009ddb' }}>
-                <h2>Positie</h2>
             </div>
 
             <div
@@ -66,6 +60,16 @@ const ButtonView = props => {
                 }}
             >
                 <h2>Thuisfront</h2>
+            </div>
+            
+            {/* a seperator */}
+            <div style={{width: 230, height: 1, backgroundColor: '#cfcfcf', marginBottom: 10}}/>
+
+            <div className='button' style={{ backgroundColor: '#fcd200' }}>
+                <h2>Route</h2>
+            </div>
+            <div className='button' style={{ backgroundColor: '#009ddb', marginBottom: 0 }}>
+                <h2>Positie</h2>
             </div>
         </div>
     );
