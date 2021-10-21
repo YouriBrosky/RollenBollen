@@ -349,7 +349,7 @@ def get_bolt(x: int, y: int, swarm: Swarm = swarm):
         if not bolt.is_busy() and curr_dist < min_dist and curr_dist > 0:
             bolt_id = bolt.id
             min_dist = curr_dist
-    return bolt_id
+    return bolt_id if bolt_id != -1 else 0
 
 
 def calc_dist(start_pos: Dict[str, int], x: int, y: int):
